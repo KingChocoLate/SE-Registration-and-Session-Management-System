@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+      
+<head th:replace="~{layout/main_layout :: head('Conference Sessions')}">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Conference Sessions</title>
+</head>
+
+<body>
+
+    <div th:replace="~{layout/navbar :: navbar}"></div>
+
+    <div class="container mt-5">
+        
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2><i class="bi bi-calendar3"></i> Conference Sessions</h2>
+            
+            <a sec:authorize="isAuthenticated()" href="/sessions/submit" class="btn btn-primary">
+                + Submit New Paper
+            </a>
+        </div>
+
+        <div class="card bg-light mb-4">
+            <div class="card-body">
+                <form action="/sessions" method="get" class="row g-2">
+                    <div class="col-md-10">
+                        <input type="text" name="keyword" class="form-control" placeholder="Search by title or author...">
+                    </div>
+                    <div class="col-md-2">
+                        <button type="submit" class="btn btn-secondary w-100">Search</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div class="card shadow-sm">
+            <div class="card-body p-0">
+                <table class="table table-hover table-striped mb-0">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>Title</th>
+                            <th>Author</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="session : ${sessions}">
+                            <td class="fw-bold" th:text="${session.title}">Artificial Intelligence in 2025</td>
+                            <td th:text="${session.submitter.username}">Dr. Smith</td>
+                            <td>
+                                <span th:if="${session.status == 'APPROVED'}" class="badge bg-success">Approved</span>
+                                <span th:if="${session.status == 'PENDING'}" class="badge bg-warning text-dark">Pending</span>
+                            </td>
+                            <td>
+                                <a th:href="@{/sessions/{id}(id=${session.id})}" class="btn btn-sm btn-info text-white">View</a>
+                                <a sec:authorize="hasAnyRole('ADMIN', 'CHAIR')" 
+                                   th:href="@{/sessions/edit/{id}(id=${session.id})}" 
+                                   class="btn btn-sm btn-outline-primary">Edit</a>
+                            </td>
+                        </tr>
+                        
+                        <tr th:if="${#lists.isEmpty(sessions)}">
+                            <td colspan="4" class="text-center py-4 text-muted">
+                                No sessions found. Be the first to submit!
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+    </div>
+
+    <div th:replace="~{layout/main_layout :: footer}"></div>
+
+</body>
+</html>
