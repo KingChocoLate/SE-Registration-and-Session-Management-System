@@ -35,7 +35,6 @@ public class MainController {
     // --- MOCK DATA FOR MEMBER 4 TESTING ---
     @GetMapping("/sessions")
     public String listSessions(Model model) {
-        // Create Fake Sessions so the table isn't empty
         List<Map<String, Object>> mockSessions = new ArrayList<>();
         
         mockSessions.add(Map.of(
