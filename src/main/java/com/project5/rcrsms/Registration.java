@@ -1,30 +1,31 @@
 package com.project5.rcrsms;
 
-import org.apache.catalina.User;
-
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
-import jakarta.websocket.Session;
+import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "registration")
+@Table(name = "registration", uniqueConstraints = {
+    @UniqueConstraint(columnNames = {"user_id", "session_id"})
+})
 public class Registration {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "registration_id")
     private Long registrationId;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id", nullable = false)
     @NotNull(message = "User is required")
     private User user;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "session_id", nullable = false)
     @NotNull(message = "Session is required")
     private Session session;
 
-    // Constructors
+    private LocalDateTime registrationDate = LocalDateTime.now();
+
     public Registration() {}
 
     // Getters and Setters
@@ -36,4 +37,7 @@ public class Registration {
 
     public Session getSession() { return session; }
     public void setSession(Session session) { this.session = session; }
+
+    public LocalDateTime getRegistrationDate() { return registrationDate; }
+    public void setRegistrationDate(LocalDateTime registrationDate) { this.registrationDate = registrationDate; }
 }

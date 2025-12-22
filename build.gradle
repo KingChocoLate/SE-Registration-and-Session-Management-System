@@ -26,23 +26,17 @@ dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-thymeleaf:4.0.0")
 	// https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-actuator
 	implementation("org.springframework.boot:spring-boot-starter-actuator:4.0.0")
-
-
-	//  Spring Data JPA (REQUIRED for your Entity and Repository)
+	
+	// Spring Data JPA 
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa' 
-    //  Validation (REQUIRED for @NotNull)
+    // Validation (Required for @NotNull in your Registration class)
     implementation 'org.springframework.boot:spring-boot-starter-validation'
-
-    //  Spring Security (For authentication/authorization)
+    // Spring Security (Required for Login/Role access)
     implementation 'org.springframework.boot:spring-boot-starter-security' 
-    
-    //  Database Driver
-    runtimeOnly 'mysql:mysql-connector-java'
+    // FIX: Database Driver (Changed from mysql-connector-java to connector-j)
+    runtimeOnly 'com.mysql:mysql-connector-j'
+    // Database Migration Tool
     implementation 'org.flywaydb:flyway-core'
-    // --- Testing Dependencies ---
-	testImplementation 'org.springframework.boot:spring-boot-starter-webmvc-test'
-	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
-
 }
 
 tasks.named('test') {

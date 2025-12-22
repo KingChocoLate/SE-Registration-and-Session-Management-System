@@ -6,6 +6,8 @@ import java.util.List;
 
 @Repository
 public interface RegistrationRepository extends JpaRepository<Registration, Long> {
-    List<Registration> findByUserUserId(Long userId);
-    List<Registration> findBySessionSessionId(Long sessionId);
+    // View participants per session
+    List<Registration> findBySession_SessionId(Long sessionId);
+    // Prevent duplicate registration
+    boolean existsByUser_UserIdAndSession_SessionId(Long userId, Long sessionId);
 }
