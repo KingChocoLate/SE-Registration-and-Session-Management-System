@@ -59,4 +59,27 @@ public class MainController {
     public String editSession() {
         return "index"; 
     }
+
+    @GetMapping("/sessions/submit")
+    public String showSubmitForm(Model model) {
+        return "session/create";
+
+    @org.springframework.web.bind.annotation.PostMapping("/sessions/submit")
+    public String handleSubmission(@org.springframework.web.bind.annotation.RequestParam String title,
+                                   @org.springframework.web.bind.annotation.RequestParam String abstractText) {
+        
+        // Simulating a database save (Member 2 will do the real logic later)
+        System.out.println("New Session Submitted:");
+        System.out.println("Title: " + title);
+        System.out.println("Abstract: " + abstractText);
+
+        // Redirect back to the list page after success
+        return "redirect:/sessions";
+    }
+
+    // *** NEW: ADMIN DASHBOARD ***
+    @GetMapping("/admin/schedule")
+    public String adminSchedule() {
+        return "admin/schedule";
+    }
 }

@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout/main_layout :: head('Admin Scheduling')}">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Scheduling</title>
+</head>
+<body>
+
+    <div th:replace="~{layout/navbar :: navbar}"></div>
+
+    <div class="container mt-5">
+        <h2 class="mb-4 text-danger"><i class="bi bi-gear-fill"></i> Session Scheduling Console</h2>
+
+        <div class="card border-danger mb-4">
+            <div class="card-header bg-danger text-white">
+                Pending Approvals
+            </div>
+            <div class="card-body">
+                <table class="table align-middle">
+                    <thead>
+                        <tr>
+                            <th>Session Title</th>
+                            <th>Author</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Sustainable Energy Grid Systems</td>
+                            <td>Tesla_Fan_99</td>
+                            <td>
+                                <button class="btn btn-sm btn-success">Approve</button>
+                                <button class="btn btn-sm btn-outline-danger">Reject</button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header bg-dark text-white">
+                Room Assignment (Approved Sessions)
+            </div>
+            <div class="card-body">
+                <form>
+                    <div class="row g-3 align-items-end">
+                        <div class="col-md-4">
+                            <label class="form-label">Select Session</label>
+                            <select class="form-select">
+                                <option>The Future of AI (Dr. Turing)</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Assign Room</label>
+                            <select class="form-select">
+                                <option>Conference Hall A (Cap: 100)</option>
+                                <option>Room 101 (Cap: 30)</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Time Slot</label>
+                            <input type="datetime-local" class="form-control">
+                        </div>
+                        <div class="col-md-2">
+                            <button type="submit" class="btn btn-primary w-100">Assign</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div th:replace="~{layout/main_layout :: footer}"></div>
+</body>
+</html>
