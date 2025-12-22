@@ -1,4 +1,4 @@
-package main.java.com.project5.rcrsms;
+package com.project5.rcrsms.model;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
@@ -33,24 +33,55 @@ public class Session {
 
     @OneToMany(mappedBy = "session", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Registration> registrations = new ArrayList<>();
-    
-    public Session() {}
 
-    public Long getSessionId() { return sessionId; }
-    public void setSessionId(Long sessionId) { this.sessionId = sessionId; }
+    public Session() {
+    }
 
-    public String getTitle() { return title; }
-    public void setTitle(String title) { this.title = title; }
+    public Long getSessionId() {
+        return sessionId;
+    }
 
-    public LocalDateTime getSessionTime() { return sessionTime; }
-    public void setSessionTime(LocalDateTime sessionTime) { this.sessionTime = sessionTime; }
+    public void setSessionId(Long sessionId) {
+        this.sessionId = sessionId;
+    }
 
-    public Conference getConference() { return conference; }
-    public void setConference(Conference conference) { this.conference = conference; }
+    public String getTitle() {
+        return title;
+    }
 
-    public User getChair() { return chair; }
-    public void setChair(User chair) { this.chair = chair; }
+    public void setTitle(String title) {
+        this.title = title;
+    }
 
-    public List<Registration> getRegistrations() { return registrations; }
-    public void setRegistrations(List<Registration> registrations) { this.registrations = registrations; }
+    public LocalDateTime getSessionTime() {
+        return sessionTime;
+    }
+
+    public void setSessionTime(LocalDateTime sessionTime) {
+        this.sessionTime = sessionTime;
+    }
+
+    public Conference getConference() {
+        return conference;
+    }
+
+    public void setConference(Conference conference) {
+        this.conference = conference;
+    }
+
+    public User getChair() {
+        return chair;
+    }
+
+    public void setChair(User chair) {
+        this.chair = chair;
+    }
+
+    public List<Registration> getRegistrations() {
+        return registrations;
+    }
+
+    public void setRegistrations(List<Registration> registrations) {
+        this.registrations = registrations;
+    }
 }
