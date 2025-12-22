@@ -1,10 +1,18 @@
-package main.java.com.project5.rcrsms;
+package com.project5.rcrsms;
 
-import jakarta.persistence.*;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "users")
-public class User {
+public class UserEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -19,9 +27,9 @@ public class User {
     @Enumerated(EnumType.STRING)
     private Role role;
 
-    public User() {}
+    public UserEntity() {}
 
-    public User(String username, String password, Role role) {
+    public UserEntity(String username, String password, Role role) {
         this.username = username;
         this.password = password;
         this.role = role;

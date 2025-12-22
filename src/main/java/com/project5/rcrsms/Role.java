@@ -1,4 +1,4 @@
-package main.java.com.project5.rcrsms;
+package com.project5.rcrsms;
 
 public enum Role {
     ADMIN,
