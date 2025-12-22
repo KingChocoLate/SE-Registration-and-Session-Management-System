@@ -63,7 +63,7 @@ public class MainController {
     @GetMapping("/sessions/submit")
     public String showSubmitForm(Model model) {
         return "session/create";
-
+    }
     @org.springframework.web.bind.annotation.PostMapping("/sessions/submit")
     public String handleSubmission(@org.springframework.web.bind.annotation.RequestParam String title,
                                    @org.springframework.web.bind.annotation.RequestParam String abstractText) {
