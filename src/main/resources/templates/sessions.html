@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Workshop Catalog</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root { 
+            --primary: #4f46e5; 
+            --primary-hover: #4338ca; 
+            --bg: #f8fafc; 
+            --text-main: #0f172a; 
+            --text-muted: #64748b; 
+        }
+        body { font-family: 'Inter', sans-serif; background-color: var(--bg); color: var(--text-main); }
+        .container { max-width: 900px; }
+        .page-header { margin-bottom: 2.5rem; border-bottom: 1px solid #e2e8f0; padding-bottom: 1.5rem; }
+        
+        /* Modern Card Styling */
+        .card-session { 
+            background: white; 
+            border: 1px solid #e2e8f0; 
+            border-radius: 12px; 
+            padding: 1.5rem; 
+            margin-bottom: 1.25rem; 
+            transition: all 0.2s ease; 
+        }
+        .card-session:hover { 
+            border-color: var(--primary); 
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05); 
+        }
+        
+        .session-title { font-weight: 700; font-size: 1.25rem; color: var(--text-main); margin-bottom: 0.25rem; }
+        .session-meta { font-size: 0.9rem; color: var(--text-muted); }
+        
+        /* Button Styling */
+        .btn-register { 
+            background-color: var(--primary); 
+            color: white; 
+            border: none; 
+            font-weight: 600; 
+            padding: 0.6rem 1.5rem; 
+            border-radius: 8px; 
+            font-size: 0.9rem;
+            transition: background 0.2s;
+        }
+        .btn-register:hover { background-color: var(--primary-hover); }
+        
+        .btn-outline { 
+            border: 1px solid #e2e8f0; 
+            color: var(--text-main); 
+            background: white; 
+            font-weight: 600; 
+            padding: 0.6rem 1.5rem; 
+            border-radius: 8px; 
+            font-size: 0.9rem; 
+            text-decoration: none; 
+            display: inline-block;
+        }
+        .btn-outline:hover { background: #f1f5f9; color: var(--text-main); }
+        
+        /* Professional Alert Styling */
+        .alert-custom { 
+            border-radius: 10px; 
+            border: none; 
+            font-size: 0.95rem; 
+            font-weight: 500; 
+            padding: 1rem 1.5rem; 
+            margin-bottom: 2rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        .alert-error { background-color: #fef2f2; color: #991b1b; border-left: 5px solid #ef4444; }
+        .alert-success { background-color: #f0fdf4; color: #166534; border-left: 5px solid #22c55e; }
+    </style>
+</head>
+<body>
+    <div class="container py-5">
+        <div class="page-header text-center">
+            <h1 class="fw-bold">Workshop Catalog</h1>
+            <p class="text-muted mb-0">Browse and register for upcoming academic sessions.</p>
+        </div>
+
+        <div th:if="${error}" class="alert-custom alert-error" th:text="${error}"></div>
+        <div th:if="${success}" class="alert-custom alert-success" th:text="${success}"></div>
+
+        <div th:each="s : ${sessions}" class="card-session d-flex justify-content-between align-items-center">
+            <div>
+                <div class="session-title" th:text="${s.title}">Workshop Title</div>
+                <div class="session-meta">
+                    Scheduled for: <span th:text="${#temporals.format(s.sessionTime, 'MMMM dd, yyyy @ HH:mm')}">Date</span>
+                </div>
+            </div>
+            
+            <div class="d-flex gap-2">
+                <form th:action="@{/registrations/add}" method="post">
+                    <input type="hidden" name="sessionId" th:value="${s.sessionId}" />
+                    <button type="submit" class="btn-register">Register</button>
+                </form>
+                
+                <a th:href="@{/registrations/view/{id}(id=${s.sessionId})}" class="btn-outline">Attendees</a>
+            </div>
+        </div>
+        
+        <div th:if="${sessions.empty}" class="text-center py-5">
+            <p class="text-muted">No workshops are currently scheduled.</p>
+        </div>
+    </div>
+</body>
+</html>

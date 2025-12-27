@@ -1,4 +1,4 @@
-package com.project5.rcrsms.model;
+package com.project5.rcrsms;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
+@Table(name = "sessions")
 @Table(name = "session")
 public class Session {
     @Id
@@ -23,6 +24,8 @@ public class Session {
     private LocalDateTime sessionTime;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "chair_id")
+    private User chair; // Assigned Session Chair
     @JoinColumn(name = "conference_id", nullable = false)
     @NotNull(message = "Conference is required")
     private Conference conference;
