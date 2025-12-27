@@ -1,7 +1,5 @@
-package com.project5.rcrsms.service;
+package com.project5.rcrsms;
 
-import com.project5.rcrsms.model.Conference;
-import com.project5.rcrsms.repository.ConferenceRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -13,10 +11,11 @@ import java.util.Optional;
 @Service
 @Transactional
 public class ConferenceService {
-
+    
+    @Autowired
     private final ConferenceRepository conferenceRepository;
 
-    @Autowired
+    
     public ConferenceService(ConferenceRepository conferenceRepository) {
         this.conferenceRepository = conferenceRepository;
     }

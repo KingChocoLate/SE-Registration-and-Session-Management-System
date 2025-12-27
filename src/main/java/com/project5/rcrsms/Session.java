@@ -8,7 +8,6 @@ import java.util.List;
 
 @Entity
 @Table(name = "sessions")
-@Table(name = "session")
 public class Session {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -26,13 +25,11 @@ public class Session {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "chair_id")
     private User chair; // Assigned Session Chair
+
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "conference_id", nullable = false)
     @NotNull(message = "Conference is required")
     private Conference conference;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "chair_id")
-    private User chair;
 
     @OneToMany(mappedBy = "session", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Registration> registrations = new ArrayList<>();

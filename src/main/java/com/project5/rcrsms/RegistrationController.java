@@ -15,7 +15,7 @@ public class RegistrationController {
     @PostMapping("/add")
     // public String register(@RequestParam Long sessionId, Principal principal, RedirectAttributes ra) {
     public String register(@RequestParam("sessionId") Long sessionId, Principal principal, RedirectAttributes ra){
-        User user = userRepo.findByUsername(principal.getName());
+        User user = userRepo.findByUsername(principal.getName()).orElseThrow(() -> new IllegalStateException("Authenticated user not found: " + principal.getName()));;
 
         // LOGIC: Prevent duplicate
         if (registrationRepo.existsByUser_UserIdAndSession_SessionId(user.getUserId(), sessionId)) {

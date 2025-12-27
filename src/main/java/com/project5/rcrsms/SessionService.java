@@ -1,11 +1,11 @@
-package main.java.com.project5.rcrsms.service;
+package com.project5.rcrsms;
 
-import main.java.com.project5.rcrsms.Session;
-import main.java.com.project5.rcrsms.Conference;
-import main.java.com.project5.rcrsms.User;
-import main.java.com.project5.rcrsms.repository.SessionRepository;
-import main.java.com.project5.rcrsms.repository.ConferenceRepository;
-import main.java.com.project5.rcrsms.repository.UserRepository;
+import com.project5.rcrsms.Session;
+import com.project5.rcrsms.Conference;
+import com.project5.rcrsms.User;
+import com.project5.rcrsms.SessionRepository;
+import com.project5.rcrsms.ConferenceRepository;
+import com.project5.rcrsms.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
