@@ -35,6 +35,7 @@ dependencies {
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	// https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-validation
 	implementation 'org.springframework.boot:spring-boot-starter-validation:3.5.7'
+  runtimeOnly 'com.mysql:mysql-connector-j'
 		// https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-actuator
 	implementation 'org.springframework.boot:spring-boot-starter-actuator:3.5.7'
 
