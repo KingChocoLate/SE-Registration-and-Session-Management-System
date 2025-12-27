@@ -1,6 +1,6 @@
 plugins {
 	id 'java'
-	id 'org.springframework.boot' version '4.0.0'
+	id 'org.springframework.boot' version '3.5.7'
 	id 'io.spring.dependency-management' version '1.1.7'
 }
 
@@ -19,24 +19,46 @@ repositories {
 }
 
 dependencies {
-	implementation 'org.springframework.boot:spring-boot-starter-webmvc'
-	testImplementation 'org.springframework.boot:spring-boot-starter-webmvc-test'
-	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+	// REQUIRED for Member 4: Allows <div sec:authorize="..."> in HTML
+	implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity6'
+	implementation 'org.springframework.boot:spring-boot-starter-web'
+	// https://mvnrepository.com/artifact/mysql/mysql-connector-java
+	implementation 'mysql:mysql-connector-java:8.0.33'
+	// https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-data-jpa
+	implementation 'org.springframework.boot:spring-boot-starter-data-jpa:3.5.7'
+	// https://mvnrepository.com/artifact/org.flywaydb/flyway-core
+	implementation 'org.flywaydb:flyway-core:11.17.0'
+	// https://mvnrepository.com/artifact/org.flywaydb/flyway-mysql
+	implementation 'org.flywaydb:flyway-mysql:11.17.0'
 	// https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-thymeleaf
-	implementation("org.springframework.boot:spring-boot-starter-thymeleaf:4.0.0")
-	// https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-actuator
-	implementation("org.springframework.boot:spring-boot-starter-actuator:4.0.0")
+	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf:3.5.7'
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	// https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-validation
+	implementation 'org.springframework.boot:spring-boot-starter-validation:3.5.7'
+  runtimeOnly 'com.mysql:mysql-connector-j'
+		// https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-actuator
+	implementation 'org.springframework.boot:spring-boot-starter-actuator:3.5.7'
+
+	// https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-security
+	implementation("org.springframework.boot:spring-boot-starter-security:3.5.7")
+
 	
-	// Spring Data JPA 
-    implementation 'org.springframework.boot:spring-boot-starter-data-jpa' 
-    // Validation (Required for @NotNull in your Registration class)
-    implementation 'org.springframework.boot:spring-boot-starter-validation'
-    // Spring Security (Required for Login/Role access)
-    implementation 'org.springframework.boot:spring-boot-starter-security' 
-    // FIX: Database Driver (Changed from mysql-connector-java to connector-j)
-    runtimeOnly 'com.mysql:mysql-connector-j'
-    // Database Migration Tool
-    implementation 'org.flywaydb:flyway-core'
+	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+	// https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-security
+	implementation("org.springframework.boot:spring-boot-starter-security:3.5.7")
+	// https://mvnrepository.com/artifact/io.jsonwebtoken/jjwt
+	implementation("io.jsonwebtoken:jjwt:0.13.0")
+	// https://mvnrepository.com/artifact/io.jsonwebtoken/jjwt-impl
+	runtimeOnly("io.jsonwebtoken:jjwt-impl:0.13.0")
+
+	// https://mvnrepository.com/artifact/io.jsonwebtoken/jjwt-jackson
+	runtimeOnly("io.jsonwebtoken:jjwt-jackson:0.13.0")
+	
+	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+	// https://mvnrepository.com/artifact/io.jsonwebtoken/jjwt-jackson
+	runtimeOnly("io.jsonwebtoken:jjwt-jackson:0.13.0")
+	runtimeOnly 'com.h2database:h2'
+	developmentOnly 'org.springframework.boot:spring-boot-devtools'
 }
 
 tasks.named('test') {
