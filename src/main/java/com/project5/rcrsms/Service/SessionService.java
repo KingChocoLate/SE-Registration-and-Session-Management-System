@@ -5,7 +5,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import com.project5.rcrsms.Entity.Conference;
 import com.project5.rcrsms.Entity.Session;
-import com.project5.rcrsms.Entity.User;
+import com.project5.rcrsms.Entity.UserEntity;
 import com.project5.rcrsms.Repository.ConferenceRepository;
 import com.project5.rcrsms.Repository.SessionRepository;
 import com.project5.rcrsms.Repository.UserRepository;
@@ -130,7 +130,7 @@ public class SessionService {
         Session session = sessionRepository.findById(sessionId)
                 .orElseThrow(() -> new RuntimeException("Session not found with id: " + sessionId));
 
-        User chair = userRepository.findById(chairId)
+        UserEntity chair = userRepository.findById(chairId)
                 .orElseThrow(() -> new RuntimeException("User not found with id: " + chairId));
 
         session.setChair(chair);

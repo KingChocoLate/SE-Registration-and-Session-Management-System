@@ -1,4 +1,4 @@
-package com.project5.rcrsms;
+package com.project5.rcrsms.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
