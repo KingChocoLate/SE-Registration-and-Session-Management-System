@@ -1,4 +1,4 @@
-package com.project5.rcrsms;
+package com.project5.rcrsms.Entity;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
@@ -24,7 +24,7 @@ public class Session {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "chair_id")
-    private User chair; // Assigned Session Chair
+    private UserEntity chair; // Assigned Session Chair
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "conference_id", nullable = false)
@@ -69,11 +69,11 @@ public class Session {
         this.conference = conference;
     }
 
-    public User getChair() {
+    public UserEntity getChair() {
         return chair;
     }
 
-    public void setChair(User chair) {
+    public void setChair(UserEntity chair) {
         this.chair = chair;
     }
 

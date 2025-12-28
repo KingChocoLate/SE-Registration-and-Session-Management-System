@@ -1,14 +1,14 @@
-package com.project5.rcrsms;
+package com.project5.rcrsms.Service;
 
-import com.project5.rcrsms.Session;
-import com.project5.rcrsms.Conference;
-import com.project5.rcrsms.User;
-import com.project5.rcrsms.SessionRepository;
-import com.project5.rcrsms.ConferenceRepository;
-import com.project5.rcrsms.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import com.project5.rcrsms.Entity.Conference;
+import com.project5.rcrsms.Entity.Session;
+import com.project5.rcrsms.Entity.UserEntity;
+import com.project5.rcrsms.Repository.ConferenceRepository;
+import com.project5.rcrsms.Repository.SessionRepository;
+import com.project5.rcrsms.Repository.UserRepository;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -18,11 +18,13 @@ import java.util.Optional;
 @Transactional
 public class SessionService {
 
+    @Autowired
     private final SessionRepository sessionRepository;
+    @Autowired
     private final ConferenceRepository conferenceRepository;
+    @Autowired
     private final UserRepository userRepository;
 
-    @Autowired
     public SessionService(SessionRepository sessionRepository,
             ConferenceRepository conferenceRepository,
             UserRepository userRepository) {
@@ -128,7 +130,7 @@ public class SessionService {
         Session session = sessionRepository.findById(sessionId)
                 .orElseThrow(() -> new RuntimeException("Session not found with id: " + sessionId));
 
-        User chair = userRepository.findById(chairId)
+        UserEntity chair = userRepository.findById(chairId)
                 .orElseThrow(() -> new RuntimeException("User not found with id: " + chairId));
 
         session.setChair(chair);
