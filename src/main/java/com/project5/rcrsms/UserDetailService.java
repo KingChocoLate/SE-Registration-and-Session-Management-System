@@ -14,7 +14,7 @@ public class UserDetailService implements UserDetailsService{
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        com.project5.rcrsms.User user = userRepository.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException("User not Found"));
-        return User.withUsername(user.getUsername()).password(user.getPassword()).roles(user.getRole()).build();
+        UserEntity userEntity = userRepository.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException("User not Found"));
+        return User.withUsername(userEntity.getUsername()).password(userEntity.getPassword()).roles(userEntity.getRole().name()).build();
     }
 }

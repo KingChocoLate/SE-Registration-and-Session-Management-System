@@ -1,11 +1,5 @@
 package com.project5.rcrsms;
 
-import com.project5.rcrsms.Session;
-import com.project5.rcrsms.Conference;
-import com.project5.rcrsms.User;
-import com.project5.rcrsms.SessionRepository;
-import com.project5.rcrsms.ConferenceRepository;
-import com.project5.rcrsms.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,11 +12,13 @@ import java.util.Optional;
 @Transactional
 public class SessionService {
 
+    @Autowired
     private final SessionRepository sessionRepository;
+    @Autowired
     private final ConferenceRepository conferenceRepository;
+    @Autowired
     private final UserRepository userRepository;
 
-    @Autowired
     public SessionService(SessionRepository sessionRepository,
             ConferenceRepository conferenceRepository,
             UserRepository userRepository) {

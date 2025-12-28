@@ -35,7 +35,7 @@ public class UserEntity {
         this.role = role;
     }
 
-    public Long getId() { return id; }
+    public Long getUserId() { return id; }
 
     public String getUsername() { return username; }
 
