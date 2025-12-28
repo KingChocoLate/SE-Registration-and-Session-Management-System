@@ -18,6 +18,11 @@ public class Session {
     @Size(min = 3, max = 200, message = "Title must be between 3 and 200 characters")
     private String title;
 
+    @NotBlank(message = "Description is required")
+    @Size(min = 10, message = "Please provide a description of at least 10 characters")
+    @Column(columnDefinition = "TEXT") 
+    private String description;
+
     @NotNull(message = "Session time is required")
     @Column(name = "session_time")
     private LocalDateTime sessionTime;
@@ -52,6 +57,9 @@ public class Session {
     public void setTitle(String title) {
         this.title = title;
     }
+
+    public String getDescription() { return description; }
+    public void setDescription(String description) { this.description = description; }
 
     public LocalDateTime getSessionTime() {
         return sessionTime;

@@ -4,10 +4,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import com.project5.rcrsms.Repository.SessionRepository;
+
+
+import jakarta.validation.Valid;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import com.project5.rcrsms.Entity.Session;
 
 @Controller
 public class SessionController {
@@ -29,19 +35,32 @@ public class SessionController {
 
     @GetMapping("/sessions/submit")
     public String showSubmitForm(Model model) {
+        model.addAttribute("session", new Session());
         return "session/create";
     }
     @PostMapping("/sessions/submit")
-    public String handleSubmission(@RequestParam String title,
-                                   @RequestParam String abstractText) {
+    // public String handleSubmission(@RequestParam String title,
+    //                                @RequestParam String abstractText) {
         
-        // Simulating a database save (Member 2 will do the real logic later)
-        System.out.println("New Session Submitted:");
-        System.out.println("Title: " + title);
-        System.out.println("Abstract: " + abstractText);
+    //     // Simulating a database save (Member 2 will do the real logic later)
+    //     System.out.println("New Session Submitted:");
+    //     System.out.println("Title: " + title);
+    //     System.out.println("Abstract: " + abstractText);
 
-        // Redirect back to the list page after success
-        return "redirect:/sessions";
+    //     // Redirect back to the list page after success
+    //     return "redirect:/sessions";
+    // }
+    public String handleSubmission(@Valid @ModelAttribute("session") Session session, 
+                               BindingResult result, 
+                               RedirectAttributes ra) {
+    if (result.hasErrors()) {
+        return "session/create"; 
+    }
+    // Save the session to the database
+    sessionRepo.save(session);
+    // 3. Add a success message to show on the sessions list page
+    ra.addFlashAttribute("success", "Session '" + session.getTitle() + "' has been submitted successfully!");
+    return "redirect:/sessions";
     }
 
     // *** NEW: ADMIN DASHBOARD ***
