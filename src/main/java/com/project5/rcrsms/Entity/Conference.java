@@ -1,4 +1,4 @@
-package com.project5.rcrsms;
+package com.project5.rcrsms.Entity;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;

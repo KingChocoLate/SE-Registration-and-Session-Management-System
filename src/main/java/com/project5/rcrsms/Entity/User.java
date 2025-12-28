@@ -1,4 +1,4 @@
-package com.project5.rcrsms;
+package com.project5.rcrsms.Entity;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;

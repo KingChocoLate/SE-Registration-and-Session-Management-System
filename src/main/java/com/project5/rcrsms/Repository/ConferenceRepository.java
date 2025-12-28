@@ -1,8 +1,9 @@
-package com.project5.rcrsms;
+package com.project5.rcrsms.Repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import com.project5.rcrsms.Entity.Conference;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;

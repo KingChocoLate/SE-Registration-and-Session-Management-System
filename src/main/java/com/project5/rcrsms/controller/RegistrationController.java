@@ -5,11 +5,11 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import com.project5.rcrsms.Registration;
-import com.project5.rcrsms.RegistrationRepository;
-import com.project5.rcrsms.SessionRepository;
-import com.project5.rcrsms.UserEntity;
-import com.project5.rcrsms.UserRepository;
+import com.project5.rcrsms.Entity.Registration;
+import com.project5.rcrsms.Repository.RegistrationRepository;
+import com.project5.rcrsms.Repository.SessionRepository;
+import com.project5.rcrsms.Entity.UserEntity;
+import com.project5.rcrsms.Repository.UserRepository;
 
 import java.security.Principal;
 @Controller

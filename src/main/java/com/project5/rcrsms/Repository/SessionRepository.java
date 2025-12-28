@@ -1,5 +1,8 @@
-package com.project5.rcrsms;
+package com.project5.rcrsms.Repository;
 
+import com.project5.rcrsms.Entity.Conference;
+import com.project5.rcrsms.Entity.Session;
+import com.project5.rcrsms.Entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 import java.util.List;

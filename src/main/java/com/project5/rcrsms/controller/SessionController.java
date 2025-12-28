@@ -5,7 +5,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 
-import com.project5.rcrsms.SessionRepository;
+import com.project5.rcrsms.Repository.SessionRepository;
 
 @Controller
 public class SessionController {
