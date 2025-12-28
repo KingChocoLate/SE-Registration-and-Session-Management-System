@@ -1,8 +1,11 @@
-package com.project5.rcrsms;
+package com.project5.rcrsms.Service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import com.project5.rcrsms.Entity.Conference;
+import com.project5.rcrsms.Repository.ConferenceRepository;
 
 import java.time.LocalDate;
 import java.util.List;
