@@ -25,7 +25,7 @@ public class RegistrationController {
         UserEntity user = userRepo.findByUsername(principal.getName()).orElseThrow(() -> new IllegalStateException("Authenticated user not found: " + principal.getName()));;
 
         // LOGIC: Prevent duplicate
-        if (registrationRepo.existsByUser_UserIdAndSession_SessionId(user.getUserId(), sessionId)) {
+        if (registrationRepo.existsByUser_IdAndSession_SessionId(user.getUserId(), sessionId)) {
             ra.addFlashAttribute("error", "You are already registered for this session.");
             return "redirect:/sessions";
         }
