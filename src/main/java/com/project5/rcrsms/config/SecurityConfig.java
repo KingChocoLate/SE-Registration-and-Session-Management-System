@@ -11,16 +11,33 @@ import org.springframework.security.web.SecurityFilterChain;
 @Configuration
 @EnableMethodSecurity
 public class SecurityConfig {
-    @Bean 
-    public PasswordEncoder passwordEncoder(){
+
+    @Bean
+    public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception{
-        httpSecurity.csrf(csrf -> csrf.disable()).authorizeHttpRequests(
-            auth -> auth.requestMatchers("/api/login").permitAll().anyRequest().authenticated()
-        );
-        return httpSecurity.build();
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        http
+            .csrf(csrf -> csrf.disable()) // Keep disabled for now
+            .authorizeHttpRequests(auth -> auth
+                // Allow Home, Login, Register, and Static Resources (CSS/JS)
+                .requestMatchers("/", "/index.html", "/login", "/register", "/css/**", "/js/**", "/images/**").permitAll()
+                // Everything else requires login
+                .anyRequest().authenticated()
+            )
+            // Enable standard Form Login (like in your Test config)
+            .formLogin(form -> form
+                .loginPage("/login") // If you have a custom login page
+                .defaultSuccessUrl("/", true) // Go to home after login
+                .permitAll()
+            )
+            .logout(logout -> logout
+                .logoutSuccessUrl("/login?logout")
+                .permitAll()
+            );
+
+        return http.build();
     }
 }

@@ -1,52 +1,78 @@
 package com.project5.rcrsms.controller;
 
+import com.project5.rcrsms.Entity.Session;
+import com.project5.rcrsms.Repository.ConferenceRepository;
+import com.project5.rcrsms.Repository.SessionRepository;
+import com.project5.rcrsms.Repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
-import com.project5.rcrsms.Repository.SessionRepository;
+import java.time.LocalDateTime;
 
 @Controller
+@RequestMapping("/sessions")
 public class SessionController {
 
     @Autowired
     private SessionRepository sessionRepo;
 
-    @GetMapping("/sessions")
+    @Autowired
+    private ConferenceRepository conferenceRepo;
+
+    @Autowired
+    private UserRepository userRepo;
+
+    // 1. List all sessions (Public View)
+    @GetMapping("/list")
     public String listSessions(Model model) {
-        // Fetches all sessions from DB to display in the list
         model.addAttribute("sessions", sessionRepo.findAll());
-        return "sessions";
+        return "session/list"; // Matches templates/session/list.html
     }
 
-    @GetMapping("/sessions/edit/{id}")
-    public String editSession() {
-        return "index"; 
+    // 2. Show Create Form
+    @GetMapping("/create")
+    public String showCreateForm(Model model) {
+        model.addAttribute("session", new Session());
+        // We need lists of Conferences and Chairs so the user can select them in the dropdowns
+        model.addAttribute("conferences", conferenceRepo.findAll());
+        model.addAttribute("chairs", userRepo.findAll()); // Ideally filter by Role.CHAIR
+        return "session/create"; // Matches templates/session/create.html
     }
 
-    @GetMapping("/sessions/submit")
-    public String showSubmitForm(Model model) {
-        return "session/create";
-    }
-    @PostMapping("/sessions/submit")
-    public String handleSubmission(@RequestParam String title,
-                                   @RequestParam String abstractText) {
+    // 3. Handle Create/Update Submission
+    @PostMapping("/save")
+    public String saveSession(@ModelAttribute("session") Session session) {
+        // Basic validation or setting default time if needed
+        if (session.getSessionTime() == null) {
+            session.setSessionTime(LocalDateTime.now());
+        }
         
-        // Simulating a database save (Member 2 will do the real logic later)
-        System.out.println("New Session Submitted:");
-        System.out.println("Title: " + title);
-        System.out.println("Abstract: " + abstractText);
-
-        // Redirect back to the list page after success
-        return "redirect:/sessions";
+        sessionRepo.save(session);
+        return "redirect:/admin/schedule"; // Redirect back to admin schedule
     }
 
-    // *** NEW: ADMIN DASHBOARD ***
-    @GetMapping("/admin/schedule")
-    public String adminSchedule() {
-        return "admin/schedule";
+    // 4. Show Edit Form
+    @GetMapping("/edit/{id}")
+    public String showEditForm(@PathVariable("id") Long id, Model model) {
+        Session session = sessionRepo.findById(id)
+            .orElseThrow(() -> new IllegalArgumentException("Invalid session Id:" + id));
+        
+        model.addAttribute("session", session);
+        model.addAttribute("conferences", conferenceRepo.findAll());
+        model.addAttribute("chairs", userRepo.findAll());
+        
+        return "session/create"; // We reuse the create form for editing!
+    }
+
+    // 5. Delete Session
+    @GetMapping("/delete/{id}")
+    public String deleteSession(@PathVariable("id") Long id) {
+        Session session = sessionRepo.findById(id)
+            .orElseThrow(() -> new IllegalArgumentException("Invalid session Id:" + id));
+        
+        sessionRepo.delete(session);
+        return "redirect:/admin/schedule";
     }
 }
