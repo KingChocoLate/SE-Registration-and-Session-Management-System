@@ -1,29 +1,30 @@
 package com.project5.rcrsms.Entity;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 
 @Entity
-@Table(name = "room")
+@Table(name = "rooms")
 public class Room {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "room_id")
     private Long roomId;
 
-    private String name;     
-    private int capacity;     
-    private String location;  
+    @Column(nullable = false)
+    private String name;
 
-    // --- CONSTRUCTORS ---
-    public Room() {}
+    @Column(nullable = false)
+    private Integer capacity;
 
-    public Room(String name, int capacity, String location) {
-        this.name = name;
-        this.capacity = capacity;
-        this.location = location;
+    public Room() {
     }
 
-    // --- GETTERS AND SETTERS ---
+    // Getters and Setters
     public Long getRoomId() {
         return roomId;
     }
@@ -40,19 +41,11 @@ public class Room {
         this.name = name;
     }
 
-    public int getCapacity() {
+    public Integer getCapacity() {
         return capacity;
     }
 
-    public void setCapacity(int capacity) {
+    public void setCapacity(Integer capacity) {
         this.capacity = capacity;
-    }
-
-    public String getLocation() {
-        return location;
-    }
-
-    public void setLocation(String location) {
-        this.location = location;
     }
 }
