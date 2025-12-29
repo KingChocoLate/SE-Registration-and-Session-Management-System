@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" 
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/main_layout}">
+<head>
+    <meta charset="UTF-8">
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <title>Admin Dashboard</title>
+</head>
+<body>
+
+<div layout:fragment="content">
+    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+        <h1 class="h2">Admin Dashboard</h1>
+        <div class="btn-toolbar mb-2 mb-md-0">
+            <a th:href="@{/sessions/create}" class="btn btn-sm btn-outline-primary">
+                <i class="bi bi-plus-lg"></i> New Session
+            </a>
+        </div>
+    </div>
+
+    <div class="row g-4 mb-4">
+        <div class="col-xl-3 col-md-6">
+            <div class="card bg-primary text-white h-100 shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="text-uppercase mb-1">Total Sessions</h6>
+                            <h2 class="mb-0 fw-bold" th:text="${totalSessions ?: 0}">0</h2>
+                        </div>
+                        <i class="bi bi-calendar-check fs-1 opacity-50"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6">
+            <div class="card bg-success text-white h-100 shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="text-uppercase mb-1">Conferences</h6>
+                            <h2 class="mb-0 fw-bold" th:text="${totalConferences ?: 0}">0</h2>
+                        </div>
+                        <i class="bi bi-building fs-1 opacity-50"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6">
+            <div class="card bg-warning text-dark h-100 shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="text-uppercase mb-1">Participants</h6>
+                            <h2 class="mb-0 fw-bold" th:text="${totalUsers ?: 0}">0</h2>
+                        </div>
+                        <i class="bi bi-people fs-1 opacity-50"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6">
+            <div class="card bg-info text-white h-100 shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="text-uppercase mb-1">Upcoming</h6>
+                            <h2 class="mb-0 fw-bold" th:text="${upcomingSessions ?: 0}">0</h2>
+                        </div>
+                        <i class="bi bi-clock-history fs-1 opacity-50"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card shadow-sm mb-4">
+        <div class="card-header bg-white py-3">
+            <h5 class="mb-0 text-primary fw-bold">Recent Sessions</h5>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="bg-light">
+                        <tr>
+                            <th>Title</th>
+                            <th>Date & Time</th>
+                            <th>Chair</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="session : ${recentSessions}">
+                            <td>
+                                <span class="fw-bold" th:text="${session.title}">Session Title</span>
+                                <div class="small text-muted" th:text="${session.conference.name}">Conf Name</div>
+                            </td>
+                            <td th:text="${#temporals.format(session.sessionTime, 'dd-MM-yyyy HH:mm')}">Date</td>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <div class="avatar-circle bg-light text-primary me-2">
+                                        <i class="bi bi-person"></i>
+                                    </div>
+                                    <span th:text="${session.chair != null ? session.chair.username : 'Unassigned'}">Name</span>
+                                </div>
+                            </td>
+                            <td><span class="badge bg-success rounded-pill">Active</span></td>
+                            <td>
+                                <a th:href="@{'/sessions/edit/' + ${session.sessionId}}" class="btn btn-sm btn-light">Edit</a>
+                            </td>
+                        </tr>
+                        <tr th:if="${#lists.isEmpty(recentSessions)}">
+                            <td colspan="5" class="text-center py-4 text-muted">No recent sessions found.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="card-footer bg-white text-end">
+            <a th:href="@{/admin/schedule}" class="text-decoration-none">View All Sessions <i class="bi bi-arrow-right"></i></a>
+        </div>
+    </div>
+
+</div>
+
+</body>
+</html>

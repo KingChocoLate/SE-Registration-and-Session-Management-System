@@ -36,6 +36,10 @@ public class Session {
     @NotNull(message = "Conference is required")
     private Conference conference;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "room_id", nullable = false)
+    private Room room;
+
     @OneToMany(mappedBy = "session", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Registration> registrations = new ArrayList<>();
 
@@ -91,5 +95,14 @@ public class Session {
 
     public void setRegistrations(List<Registration> registrations) {
         this.registrations = registrations;
+    }
+
+    // --- NEW GETTERS AND SETTERS FOR ROOM ---
+    public Room getRoom() {
+        return room;
+    }
+
+    public void setRoom(Room room) {
+        this.room = room;
     }
 }
