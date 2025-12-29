@@ -4,9 +4,7 @@
       layout:decorate="~{layout/main_layout}">
 <head>
     <meta charset="UTF-8">
-    
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    
     <title th:text="${session.sessionId == null ? 'Create Session' : 'Edit Session'}">Session Form</title>
 </head>
 <body>
@@ -45,6 +43,17 @@
                             </select>
                         </div>
 
+                        <div class="mb-3">
+                            <label for="room" class="form-label fw-bold">Select Room</label>
+                            <select class="form-select" id="room" th:field="*{room}" required>
+                                <option value="" disabled selected>Select a Room</option>
+                                <option th:each="r : ${rooms}" 
+                                        th:value="${r.roomId}" 
+                                        th:text="${r.name} + ' (Cap: ' + ${r.capacity} + ')'">
+                                    Conference Hall A (Cap: 100)
+                                </option>
+                            </select>
+                        </div>
                         <div class="mb-3">
                             <label for="chair" class="form-label fw-bold">Assign Chair</label>
                             <select class="form-select" id="chair" th:field="*{chair}">

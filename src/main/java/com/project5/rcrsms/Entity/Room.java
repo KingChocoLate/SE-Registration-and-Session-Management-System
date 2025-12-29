@@ -10,9 +10,9 @@ public class Room {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long roomId;
 
-    private String name;      // e.g., "Conference Hall A"
-    private int capacity;     // e.g., 50
-    private String location;  // e.g., "Building 1, Floor 2"
+    private String name;     
+    private int capacity;     
+    private String location;  
 
     // --- CONSTRUCTORS ---
     public Room() {}

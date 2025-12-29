@@ -31,11 +31,10 @@ public class Session {
     @NotNull(message = "Conference is required")
     private Conference conference;
 
-    // --- NEW ROOM RELATIONSHIP ---
-    @ManyToOne(fetch = FetchType.EAGER) // Eager loading helps display room name easily in lists
+    @ManyToOne(fetch = FetchType.EAGER) 
     @JoinColumn(name = "room_id")
     private Room room;
-    // -----------------------------
+
 
     @OneToMany(mappedBy = "session", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Registration> registrations = new ArrayList<>();

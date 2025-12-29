@@ -4,6 +4,7 @@ import com.project5.rcrsms.Entity.Session;
 import com.project5.rcrsms.Repository.ConferenceRepository;
 import com.project5.rcrsms.Repository.SessionRepository;
 import com.project5.rcrsms.Repository.UserRepository;
+import com.project5.rcrsms.Repository.RoomRepository; // <--- 1. NEW IMPORT
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -24,33 +25,39 @@ public class SessionController {
     @Autowired
     private UserRepository userRepo;
 
+    // 2. NEW: Inject the RoomRepository
+    @Autowired
+    private RoomRepository roomRepo; 
+
     // 1. List all sessions (Public View)
     @GetMapping("/list")
     public String listSessions(Model model) {
         model.addAttribute("sessions", sessionRepo.findAll());
-        return "session/list"; // Matches templates/session/list.html
+        return "session/list";
     }
 
-    // 2. Show Create Form
+    // 2. Show Create Form/
     @GetMapping("/create")
     public String showCreateForm(Model model) {
         model.addAttribute("session", new Session());
-        // We need lists of Conferences and Chairs so the user can select them in the dropdowns
         model.addAttribute("conferences", conferenceRepo.findAll());
-        model.addAttribute("chairs", userRepo.findAll()); // Ideally filter by Role.CHAIR
-        return "session/create"; // Matches templates/session/create.html
+        model.addAttribute("chairs", userRepo.findAll());
+        
+        // 3. NEW: Add Rooms to the model so the dropdown works
+        model.addAttribute("rooms", roomRepo.findAll()); 
+        
+        return "session/create";
     }
 
     // 3. Handle Create/Update Submission
     @PostMapping("/save")
     public String saveSession(@ModelAttribute("session") Session session) {
-        // Basic validation or setting default time if needed
         if (session.getSessionTime() == null) {
             session.setSessionTime(LocalDateTime.now());
         }
         
         sessionRepo.save(session);
-        return "redirect:/admin/schedule"; // Redirect back to admin schedule
+        return "redirect:/admin/schedule";
     }
 
     // 4. Show Edit Form
@@ -63,7 +70,10 @@ public class SessionController {
         model.addAttribute("conferences", conferenceRepo.findAll());
         model.addAttribute("chairs", userRepo.findAll());
         
-        return "session/create"; // We reuse the create form for editing!
+        // 3. NEW: Add Rooms here too so editing works
+        model.addAttribute("rooms", roomRepo.findAll());
+        
+        return "session/create";
     }
 
     // 5. Delete Session
