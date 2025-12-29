@@ -1,77 +1,100 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
-<head th:replace="~{layout/main_layout :: head('Admin Scheduling')}">
+<html lang="en" xmlns:th="http://www.thymeleaf.org" 
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/main_layout}">
+<head>
     <meta charset="UTF-8">
+    
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Scheduling</title>
+    
+    <title>Session Schedule</title>
 </head>
 <body>
 
-    <div th:replace="~{layout/navbar :: navbar}"></div>
-
-    <div class="container mt-5">
-        <h2 class="mb-4 text-danger"><i class="bi bi-gear-fill"></i> Session Scheduling Console</h2>
-
-        <div class="card border-danger mb-4">
-            <div class="card-header bg-danger text-white">
-                Pending Approvals
-            </div>
-            <div class="card-body">
-                <table class="table align-middle">
-                    <thead>
-                        <tr>
-                            <th>Session Title</th>
-                            <th>Author</th>
-                            <th>Action</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>Sustainable Energy Grid Systems</td>
-                            <td>Tesla_Fan_99</td>
-                            <td>
-                                <button class="btn btn-sm btn-success">Approve</button>
-                                <button class="btn btn-sm btn-outline-danger">Reject</button>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
+<div layout:fragment="content">
+    
+    <div class="row mb-4 align-items-center">
+        <div class="col-md-6">
+            <h2 class="fw-bold text-primary">Session Schedule</h2>
+            <p class="text-muted">Manage dates, times, and assigned chairs.</p>
         </div>
-
-        <div class="card">
-            <div class="card-header bg-dark text-white">
-                Room Assignment (Approved Sessions)
-            </div>
-            <div class="card-body">
-                <form>
-                    <div class="row g-3 align-items-end">
-                        <div class="col-md-4">
-                            <label class="form-label">Select Session</label>
-                            <select class="form-select">
-                                <option>The Future of AI (Dr. Turing)</option>
-                            </select>
-                        </div>
-                        <div class="col-md-3">
-                            <label class="form-label">Assign Room</label>
-                            <select class="form-select">
-                                <option>Conference Hall A (Cap: 100)</option>
-                                <option>Room 101 (Cap: 30)</option>
-                            </select>
-                        </div>
-                        <div class="col-md-3">
-                            <label class="form-label">Time Slot</label>
-                            <input type="datetime-local" class="form-control" placeholder="Select date and time">
-                        </div>
-                        <div class="col-md-2">
-                            <button type="submit" class="btn btn-primary w-100">Assign</button>
-                        </div>
-                    </div>
-                </form>
-            </div>
+        <div class="col-md-6 text-md-end">
+            <a th:href="@{/sessions/create}" class="btn btn-primary">
+                <i class="bi bi-plus-circle me-1"></i> Add New Session
+            </a>
         </div>
     </div>
 
-    <div th:replace="~{layout/main_layout :: footer}"></div>
+    <div class="card mb-4 border-0 shadow-sm">
+        <div class="card-body bg-light rounded-3">
+            <form class="row g-3 align-items-end">
+                <div class="col-md-4">
+                    <label class="form-label fw-bold small">Search by Title</label>
+                    <input type="text" class="form-control" placeholder="e.g. AI Research...">
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label fw-bold small">Filter by Date</label>
+                    <input type="date" class="form-control">
+                </div>
+                <div class="col-md-2">
+                    <button type="submit" class="btn btn-dark w-100">Filter</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="card shadow-sm">
+        <div class="card-body p-0">
+            <table class="table table-striped table-hover mb-0">
+                <thead class="table-dark">
+                    <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">Session Title</th>
+                        <th scope="col">Conference</th>
+                        <th scope="col">Date & Time</th>
+                        <th scope="col">Assigned Chair</th>
+                        <th scope="col" class="text-end">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="session : ${sessions}">
+                        <td th:text="${session.sessionId}">1</td>
+                        <td class="fw-bold" th:text="${session.title}">Future of AI</td>
+                        <td th:text="${session.conference.name}">Tech Conf 2025</td>
+                        <td th:text="${#temporals.format(session.sessionTime, 'EEE, dd MMM yyyy HH:mm')}">
+                            Fri, 24 Dec 2025 10:00
+                        </td>
+                        <td>
+                            <span th:if="${session.chair != null}" class="badge bg-info text-dark" 
+                                  th:text="${session.chair.username}">Chair Name</span>
+                            <span th:unless="${session.chair != null}" class="badge bg-secondary">Unassigned</span>
+                        </td>
+                        <td class="text-end">
+                            <div class="btn-group" role="group">
+                                <a th:href="@{'/sessions/edit/' + ${session.sessionId}}" class="btn btn-sm btn-outline-primary" title="Edit">
+                                    <i class="bi bi-pencil-square"></i>
+                                </a>
+                                <a th:href="@{'/sessions/delete/' + ${session.sessionId}}" 
+                                   class="btn btn-sm btn-outline-danger" 
+                                   onclick="return confirm('Are you sure you want to delete this session?');" title="Delete">
+                                    <i class="bi bi-trash"></i>
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                    
+                    <tr th:if="${#lists.isEmpty(sessions)}">
+                        <td colspan="6" class="text-center py-5">
+                            <i class="bi bi-calendar-x fs-1 text-muted d-block mb-2"></i>
+                            <p class="text-muted">No sessions scheduled yet.</p>
+                            <a th:href="@{/sessions/create}" class="btn btn-sm btn-primary">Create First Session</a>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
 </body>
 </html>
