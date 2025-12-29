@@ -1,4 +1,4 @@
-package com.project5.rcrsms;
+package com.project5.rcrsms.dto;
 
 public class LoginResponse {
     private String username;

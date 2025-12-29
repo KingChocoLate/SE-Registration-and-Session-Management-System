@@ -75,7 +75,7 @@ public class SessionService {
 
   
     @Transactional(readOnly = true)
-    public List<Session> getSessionsByChair(User chair) {
+    public List<Session> getSessionsByChair(UserEntity chair) {
         return sessionRepository.findByChair(chair);
     }
 
