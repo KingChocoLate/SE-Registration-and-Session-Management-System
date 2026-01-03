@@ -41,9 +41,9 @@ public class MainController {
     
     @PostMapping("/register")
     public String registerUser(
-            @RequestParam String username,
-            @RequestParam String password,
-            @RequestParam(defaultValue = "USER") String role,
+            @RequestParam("username") String username,
+            @RequestParam("password") String password,
+            @RequestParam(name = "role", defaultValue = "USER") String role,
             RedirectAttributes redirectAttributes) {
         
         try {

@@ -5,7 +5,7 @@ ADD CONSTRAINT fk_session_room
     FOREIGN KEY (room_id)
     REFERENCES rooms(room_id);
 
--- ensure conference dates are valid (if needed)
+-- ensure conference dates are valid
 ALTER TABLE conferences
 ADD CONSTRAINT chk_conference_date
     CHECK (end_date >= start_date);
