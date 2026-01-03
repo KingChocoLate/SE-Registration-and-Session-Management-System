@@ -1,10 +1,10 @@
-package com.conference.service;
+package com.project5.rcrsms.Service;
 
-import com.conference.model.Registration;
-import com.conference.model.Session;
-import com.conference.model.Room;
-import com.conference.repository.RegistrationRepository;
-import com.conference.repository.SessionRepository;
+import com.project5.rcrsms.Entity.Registration;
+import com.project5.rcrsms.Entity.Session;
+import com.project5.rcrsms.Entity.Room;
+import com.project5.rcrsms.Repository.RegistrationRepository;
+import com.project5.rcrsms.Repository.SessionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,9 +26,9 @@ public class RegistrationService {
     @Transactional
     public Registration registerAttendee(Registration registration) {
         // Validate session exists
-        Session session = sessionRepository.findById(registration.getSession().getId())
+        Session session = sessionRepository.findById(registration.getSession().getSessionId())
             .orElseThrow(() -> new IllegalArgumentException(
-                "Session not found with ID: " + registration.getSession().getId()));
+                "Session not found with ID: " + registration.getSession().getSessionId()));
 
         // Get the room for this session
         Room room = session.getRoom();
@@ -38,7 +38,7 @@ public class RegistrationService {
         }
 
         // Count current registrations for this session
-        long currentCount = registrationRepository.countBySessionId(session.getId());
+        long currentCount = registrationRepository.countBySession_sessionId(session.getSessionId());
 
         // Check room capacity
         if (currentCount >= room.getCapacity()) {
@@ -51,9 +51,9 @@ public class RegistrationService {
 
         // Check for duplicate registration (same attendee, same session)
         boolean alreadyRegistered = registrationRepository
-            .existsByAttendeeIdAndSessionId(
-                registration.getAttendee().getId(),
-                session.getId());
+            .existsByUser_userIdAndSession_sessionId(
+                registration.getUser().getUserId(),
+                session.getSessionId());
 
         if (alreadyRegistered) {
             throw new IllegalStateException(
@@ -69,7 +69,7 @@ public class RegistrationService {
      */
     @Transactional(readOnly = true)
     public List<Registration> getRegistrationsBySession(Long sessionId) {
-        return registrationRepository.findBySessionId(sessionId);
+        return registrationRepository.findBySession_sessionId(sessionId);
     }
 
     /**
@@ -77,7 +77,7 @@ public class RegistrationService {
      */
     @Transactional(readOnly = true)
     public List<Registration> getRegistrationsByAttendee(Long attendeeId) {
-        return registrationRepository.findByAttendeeId(attendeeId);
+        return registrationRepository.findByUser_userId(attendeeId);
     }
 
     /**
@@ -106,7 +106,7 @@ public class RegistrationService {
             return 0;
         }
 
-        long currentCount = registrationRepository.countBySessionId(sessionId);
+        long currentCount = registrationRepository.countBySession_sessionId(sessionId);
         return Math.max(0, room.getCapacity() - (int) currentCount);
     }
 }

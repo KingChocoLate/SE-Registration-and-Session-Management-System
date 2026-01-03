@@ -14,8 +14,9 @@ public interface SessionRepository extends JpaRepository<Session, Long> {
     List<Session> findByConferenceConferenceId(Long conferenceId);
     List<Session> findByConferenceConferenceIdAndSessionTimeGreaterThanEqual(Long conferenceId, LocalDateTime sessionTime);
     List<Session> findByChair(UserEntity chair);
-    List<Session> findByChairId(Long userId);
+    List<Session> findByChair_userId(Long userId);
     List<Session> findByTitleContainingIgnoreCase(String keyword);
     List<Session> findBySessionTimeBetween(LocalDateTime start, LocalDateTime end);
     List<Session> findBySessionTimeGreaterThanEqualOrderBySessionTimeAsc(LocalDateTime time);
+    boolean existsByRoom_RoomIdAndSessionTime(Long roomId, LocalDateTime sessionTime);
 }

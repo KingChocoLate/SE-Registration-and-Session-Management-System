@@ -8,6 +8,8 @@ import java.util.List;
 @Repository
 public interface RegistrationRepository extends JpaRepository<Registration, Long> {
 
-    List<Registration> findBySession_SessionId(Long sessionId);
-    boolean existsByUser_IdAndSession_SessionId(Long userId, Long sessionId);
+    List<Registration> findBySession_sessionId(Long sessionId);
+    boolean existsByUser_userIdAndSession_sessionId(Long userId, Long sessionId);
+    Long countBySession_sessionId(Long sessionId);
+    List<Registration> findByUser_userId(Long attendeeId);
 }

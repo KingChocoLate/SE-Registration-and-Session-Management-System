@@ -82,7 +82,7 @@ public class SessionService {
     // Read - Get by chair ID
     @Transactional(readOnly = true)
     public List<Session> getSessionsByChairId(Long chairId) {
-        return sessionRepository.findByChairId(chairId);
+        return sessionRepository.findByChair_userId(chairId);
     }
 
     // Read - Search by title
@@ -180,7 +180,7 @@ public class SessionService {
     // Count sessions by chair
     @Transactional(readOnly = true)
     public long countSessionsByChair(Long chairId) {
-        return sessionRepository.findByChairId(chairId).size();
+        return sessionRepository.findByChair_userId(chairId).size();
     }
 
     // Validation helper
