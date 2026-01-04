@@ -1,36 +1,69 @@
-<nav th:fragment="navbar" class="navbar navbar-expand-lg navbar-dark bg-dark">
-  <div class="container-fluid">
-    <a class="navbar-brand" href="/">ConfSys</a>
-    
-    <div class="collapse navbar-collapse">
-      <ul class="navbar-nav me-auto">
-        
-        <li class="nav-item" sec:authorize="!isAuthenticated()">
-            <a class="nav-link" href="/sessions">Browse Sessions</a>
-        </li>
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<body>
+    <nav th:fragment="navbar" class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top">
+        <div class="container">
+            <a class="navbar-brand fw-bold d-flex align-items-center" href="/">
+                <i class="bi bi-easel2-fill me-2 text-primary"></i> ConfSys
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/sessions">Sessions</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/conferences">Conferences</a>
+                    </li>
 
-        <li class="nav-item" sec:authorize="isAuthenticated()">
-            <a class="nav-link" href="/sessions/submit">Submit Paper</a>
-        </li>
+                    <li class="nav-item ms-lg-3" sec:authorize="hasRole('ADMIN')">
+                        <a class="nav-link text-warning" href="/admin/dashboard">
+                            <i class="bi bi-speedometer2 me-1"></i>Dashboard
+                        </a>
+                    </li>
+                    <li class="nav-item" sec:authorize="hasRole('ADMIN')">
+                        <a class="nav-link text-warning" href="/admin/rooms">
+                            <i class="bi bi-geo-alt me-1"></i>Rooms
+                        </a>
+                    </li>
 
-        <li class="nav-item" sec:authorize="hasAnyRole('ADMIN', 'CHAIR')">
-            <a class="nav-link text-warning" href="/admin/approvals">Approvals</a>
-        </li>
-      </ul>
+                    <li class="nav-item" sec:authorize="hasAnyRole('ADMIN', 'CHAIR')">
+                        <a class="nav-link text-info" href="/admin/approvals">
+                            <i class="bi bi-check-square me-1"></i>Approvals
+                        </a>
+                    </li>
+                </ul>
 
-      <div class="d-flex">
-          <div sec:authorize="!isAuthenticated()">
-              <a href="/login" class="btn btn-outline-light me-2">Login</a>
-              <a href="/register" class="btn btn-primary">Sign Up</a>
-          </div>
+                <div class="d-flex align-items-center gap-2">
+                    <div sec:authorize="isAuthenticated()" class="dropdown">
+                        <a class="btn btn-outline-light dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                            <i class="bi bi-person-circle me-1"></i>
+                            <span sec:authentication="name">User</span>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end shadow">
+                            <li>
+                                <form th:action="@{/logout}" method="post" class="mb-0">
+                                    <button class="dropdown-item text-danger" type="submit">
+                                        <i class="bi bi-box-arrow-right me-2"></i>Logout
+                                    </button>
+                                </form>
+                            </li>
+                        </ul>
+                    </div>
 
-          <div sec:authorize="isAuthenticated()" class="text-white">
-              Hello, <span sec:authentication="name">Username</span>!
-              <form th:action="@{/logout}" method="post" class="d-inline">
-                  <button type="submit" class="btn btn-danger btn-sm ms-2">Logout</button>
-              </form>
-          </div>
-      </div>
-    </div>
-  </div>
-</nav>
+                    <div sec:authorize="!isAuthenticated()">
+                        <a href="/login" class="btn btn-outline-light me-2">Login</a>
+                        <a href="/register" class="btn btn-primary">Sign Up</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+</body>
+</html>

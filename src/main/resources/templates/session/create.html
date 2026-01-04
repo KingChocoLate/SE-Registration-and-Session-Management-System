@@ -1,13 +1,73 @@
-<div class="mb-3">
-    <label class="form-label">Session Description</label>
-    
-    <textarea th:field="*{description}" 
-              class="form-control" 
-              placeholder="Enter session details here..." 
-              rows="4"></textarea>
-              
-    <div class="text-danger" 
-         th:if="${#fields.hasErrors('description')}" 
-         th:errors="*{description}">
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" 
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/main_layout}">
+<head>
+    <title>Schedule Session</title>
+</head>
+<body>
+
+<div layout:fragment="content">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">Schedule New Session (Admin)</h4>
+                </div>
+                <div class="card-body p-4">
+                    
+                    <form th:action="@{/sessions/save}" th:object="${session}" method="post">
+                        <input type="hidden" th:field="*{sessionId}" />
+
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Session Title</label>
+                            <input type="text" class="form-control" th:field="*{title}" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Date & Time</label>
+                            <input type="datetime-local" class="form-control" th:field="*{sessionTime}" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Conference</label>
+                            <select class="form-select" th:field="*{conference}" required>
+                                <option value="">-- Select Conference --</option>
+                                <option th:each="c : ${conferences}" 
+                                        th:value="${c.conferenceId}" 
+                                        th:text="${c.name}"></option>
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Room</label>
+                            <select class="form-select" th:field="*{room}" required>
+                                <option value="">-- Select Room --</option>
+                                <option th:each="r : ${rooms}" 
+                                        th:value="${r.roomId}" 
+                                        th:text="${r.name} + ' (Cap: ' + ${r.capacity} + ')'"></option>
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Session Chair</label>
+                            <select class="form-select" th:field="*{chair}">
+                                <option value="">-- Assign Chair --</option>
+                                <option th:each="user : ${chairs}" 
+                                        th:value="${user.userId}" 
+                                        th:text="${user.username}"></option>
+                            </select>
+                        </div>
+
+                        <div class="d-flex justify-content-end gap-2">
+                            <a href="/admin/dashboard" class="btn btn-secondary">Cancel</a>
+                            <button type="submit" class="btn btn-success">Save Session</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
+</body>
+</html>

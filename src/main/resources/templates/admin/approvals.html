@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" 
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/main_layout}">
+<head><title>Approvals</title></head>
+<body>
+<div layout:fragment="content">
+    <h2>Pending Submissions</h2>
+    <div class="alert alert-info" th:if="${pendingSessions.empty}">No pending submissions.</div>
+    
+    <div class="card mb-3" th:each="s : ${pendingSessions}">
+        <div class="card-body">
+            <h5 class="card-title" th:text="${s.title}">Title</h5>
+            <p class="card-text text-muted" th:text="${s.proposalAbstract}">Abstract...</p>
+            <p><strong>Submitted by:</strong> <span th:text="${s.chair != null ? s.chair.username : 'Unknown'}">User</span></p>
+            
+            <div class="d-flex gap-2">
+                <form th:action="@{'/admin/approvals/' + ${s.sessionId} + '/approve'}" method="post">
+                    <button class="btn btn-success">Approve</button>
+                </form>
+                <form th:action="@{'/admin/approvals/' + ${s.sessionId} + '/reject'}" method="post">
+                    <button class="btn btn-danger">Reject</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

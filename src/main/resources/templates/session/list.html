@@ -1,58 +1,51 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
-<head th:replace="~{layout/main_layout :: head('Submit Abstract')}">
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Submit Abstract</title>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" 
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/main_layout}">
+<head>
+    <title>Workshop Catalog</title>
 </head>
-<body class="bg-light">
+<body>
 
-    <div th:replace="~{layout/navbar :: navbar}"></div>
+<div layout:fragment="content">
+    <div class="text-center mb-5">
+        <h1 class="fw-bold text-primary">Workshop Catalog</h1>
+        <p class="text-muted">Browse and register for upcoming academic sessions.</p>
+    </div>
 
-    <div class="container mt-5">
-        <div class="row justify-content-center">
-            <div class="col-md-8">
-                <div class="card shadow-sm">
-                    <div class="card-header bg-primary text-white">
-                        <h4 class="mb-0">Call for Papers: Submission</h4>
-                    </div>
-                    <div class="card-body">
-                        
-                        <form th:action="@{/sessions/submit}" method="post">
+    <div class="row g-4">
+        <div class="col-12" th:each="s : ${sessions}">
+            <div class="card shadow-sm border-0 hover-effect">
+                <div class="card-body p-4 d-flex flex-column flex-md-row justify-content-between align-items-center">
+                    <div class="mb-3 mb-md-0">
+                        <h5 class="fw-bold text-dark mb-1" th:text="${s.title}">Title</h5>
+                        <div class="text-muted small">
+                            <i class="bi bi-calendar-event me-2"></i>
+                            <span th:text="${s.sessionTime != null ? #temporals.format(s.sessionTime, 'MMMM dd, yyyy @ HH:mm') : 'Date TBA'}">Date</span>
                             
-                            <div class="mb-4">
-                                <label for="title" class="form-label fw-bold">Paper Title</label>
-                                <input type="text" class="form-control" id="title" name="title" 
-                                       placeholder="e.g., Advances in Quantum Computing" required>
-                                <div class="form-text">Keep it under 100 characters.</div>
-                            </div>
-
-                            <div class="mb-4">
-                                <label for="abstract" class="form-label fw-bold">Abstract</label>
-                                <textarea class="form-control" id="abstract" name="abstract" rows="6" 
-                                          placeholder="Describe your research methodology and findings..." required></textarea>
-                                <div class="form-text">Minimum 50 words.</div>
-                            </div>
-
-                            <div class="mb-4">
-                                <label for="coAuthors" class="form-label fw-bold">Co-Authors (Optional)</label>
-                                <input type="text" class="form-control" id="coAuthors" name="coAuthors" 
-                                       placeholder="Separate names with commas">
-                            </div>
-
-                            <hr>
-
-                            <div class="d-flex justify-content-end gap-2">
-                                <a href="/sessions" class="btn btn-secondary">Cancel</a>
-                                <button type="submit" class="btn btn-success px-4">Submit Proposal</button>
-                            </div>
+                            <span class="mx-2">•</span>
+                            
+                            <span class="badge bg-light text-dark border" 
+                                  th:text="${s.conference != null ? s.conference.name : 'Conference TBA'}">Conference</span>
+                        </div>
+                    </div>
+                    
+                    <div class="d-flex gap-2">
+                        <a th:href="@{/sessions/view/{id}(id=${s.sessionId})}" class="btn btn-outline-secondary">Details</a>
+                        
+                        <form th:action="@{/registrations/add}" method="post">
+                            <input type="hidden" name="sessionId" th:value="${s.sessionId}" />
+                            <button type="submit" class="btn btn-primary px-4">Register</button>
                         </form>
                     </div>
                 </div>
             </div>
         </div>
+        
+        <div th:if="${sessions.empty}" class="col-12 text-center py-5">
+            <div class="alert alert-light">No sessions available at the moment.</div>
+        </div>
     </div>
-
-    <div th:replace="~{layout/main_layout :: footer}"></div>
+</div>
 </body>
 </html>

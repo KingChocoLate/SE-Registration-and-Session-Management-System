@@ -1,11 +1,6 @@
 package com.project5.rcrsms.Entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 
 @Entity
 @Table(name = "rooms")
@@ -21,31 +16,22 @@ public class Room {
     @Column(nullable = false)
     private Integer capacity;
 
-    public Room() {
-    }
+    // --- ADD THIS FIELD OR THE APP WILL CRASH ---
+    @Column(nullable = false)
+    private String location; 
 
-    // Getters and Setters
-    public Long getRoomId() {
-        return roomId;
-    }
+    public Room() {}
 
-    public void setRoomId(Long roomId) {
-        this.roomId = roomId;
-    }
+    public Long getRoomId() { return roomId; }
+    public void setRoomId(Long roomId) { this.roomId = roomId; }
 
-    public String getName() {
-        return name;
-    }
+    public String getName() { return name; }
+    public void setName(String name) { this.name = name; }
 
-    public void setName(String name) {
-        this.name = name;
-    }
+    public Integer getCapacity() { return capacity; }
+    public void setCapacity(Integer capacity) { this.capacity = capacity; }
 
-    public Integer getCapacity() {
-        return capacity;
-    }
-
-    public void setCapacity(Integer capacity) {
-        this.capacity = capacity;
-    }
+    // --- ADD GETTER AND SETTER ---
+    public String getLocation() { return location; }
+    public void setLocation(String location) { this.location = location; }
 }
