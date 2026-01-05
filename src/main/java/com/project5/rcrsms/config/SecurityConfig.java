@@ -30,7 +30,7 @@ public class SecurityConfig {
             .csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/css/**", "/js/**", "/api/login", "/register", "/login", "/error", "/sessions").permitAll()
-                .requestMatchers("/admin/**").authenticated()
+                .requestMatchers("/admin/**").hasAnyAuthority("ADMIN")
                 .requestMatchers("/registrations/add").authenticated()
                 .anyRequest().authenticated()
             )

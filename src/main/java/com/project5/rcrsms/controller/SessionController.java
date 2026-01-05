@@ -20,6 +20,8 @@ import java.time.LocalDateTime;
 import jakarta.validation.Valid;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.springframework.web.bind.annotation.RequestParam;
+
 
 @Controller
 @RequestMapping("/sessions")
@@ -37,9 +39,9 @@ public class SessionController {
     // 2. NEW: Inject the RoomRepository
     @Autowired
     private RoomRepository roomRepo; 
-
+    
     // 1. List all sessions (Public View)
-    @GetMapping({"/list", "/", ""})
+    @GetMapping("/list")
     public String listSessions(Model model) {
         model.addAttribute("sessions", sessionRepo.findAll());
         return "session/list";

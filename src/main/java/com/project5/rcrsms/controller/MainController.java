@@ -43,7 +43,7 @@ public class MainController {
     public String registerUser(
             @RequestParam("username") String username,
             @RequestParam("password") String password,
-            @RequestParam(name = "role", defaultValue = "USER") String role,
+            @RequestParam(name = "role", defaultValue = "PARTICIPANT") String role,
             RedirectAttributes redirectAttributes) {
         
         try {
