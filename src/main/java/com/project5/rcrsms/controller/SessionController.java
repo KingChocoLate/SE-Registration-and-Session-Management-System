@@ -2,9 +2,9 @@ package com.project5.rcrsms.controller;
 
 import com.project5.rcrsms.Entity.Session;
 import com.project5.rcrsms.Repository.ConferenceRepository;
-import com.project5.rcrsms.Repository.SessionRepository;
 import com.project5.rcrsms.Repository.UserRepository;
 import com.project5.rcrsms.Repository.RoomRepository;
+import com.project5.rcrsms.Service.SessionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -28,7 +28,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 public class SessionController {
 
     @Autowired
-    private SessionRepository sessionRepo;
+    private SessionService sessionService;
 
     @Autowired
     private ConferenceRepository conferenceRepo;
@@ -43,7 +43,7 @@ public class SessionController {
     // 1. List all sessions (Public View)
     @GetMapping("/list")
     public String listSessions(Model model) {
-        model.addAttribute("sessions", sessionRepo.findAll());
+        model.addAttribute("sessions", sessionService.getAllSessions());
         return "session/list";
     }
 
@@ -71,7 +71,7 @@ public class SessionController {
             return "session/create"; 
         }
         // Save the session to the database
-        sessionRepo.save(session);
+        sessionService.createSession(session);
         // 3. Add a success message to show on the sessions list page
         ra.addFlashAttribute("success", "Session '" + session.getTitle() + "' has been submitted successfully!");
         return "redirect:/sessions";
@@ -97,14 +97,18 @@ public class SessionController {
             session.setSessionTime(LocalDateTime.now());
         }
         
-        sessionRepo.save(session);
+        if (session.getSessionId() != null) {
+            sessionService.updateSession(session.getSessionId(), session);
+        } else {
+            sessionService.createSession(session);
+        }
         return "redirect:/admin/schedule";
     }
 
     // 4. Show Edit Form
     @GetMapping("/edit/{id}")
     public String showEditForm(@PathVariable("id") Long id, Model model) {
-        Session session = sessionRepo.findById(id)
+        Session session = sessionService.getSessionById(id)
             .orElseThrow(() -> new IllegalArgumentException("Invalid session Id:" + id));
         
         model.addAttribute("session", session);
@@ -120,10 +124,7 @@ public class SessionController {
     // 5. Delete Session
     @GetMapping("/delete/{id}")
     public String deleteSession(@PathVariable("id") Long id) {
-        Session session = sessionRepo.findById(id)
-            .orElseThrow(() -> new IllegalArgumentException("Invalid session Id:" + id));
-        
-        sessionRepo.delete(session);
+        sessionService.deleteSession(id);
         return "redirect:/admin/schedule";
     }
 }
