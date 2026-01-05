@@ -15,7 +15,7 @@ public class ConferenceController {
     private ConferenceService conferenceService;
 
     // 1. List All Conferences
-    @GetMapping("") // Matches /conferences
+    @GetMapping("") 
     public String listConferences(Model model) {
         model.addAttribute("conferences", conferenceService.getAllConferences());
         return "conference/list"; // You'll need to create this file later if you want a public list
@@ -31,6 +31,21 @@ public class ConferenceController {
     // 3. Save Conference
     @PostMapping("/save")
     public String saveConference(@ModelAttribute("conference") Conference conference) {
+        conferenceRepo.save(conference);
+        return "redirect:/admin/dashboard"; 
+    }
+    
+    // 4. NEW: View Conference Details (Fixes view.html)
+    @GetMapping("/{id}")
+    public String viewConference(@PathVariable Long id, Model model) {
+        Conference conference = conferenceRepo.findById(id)
+            .orElseThrow(() -> new IllegalArgumentException("Invalid conference Id:" + id));
+            
+        model.addAttribute("conference", conference);
+        // Load sessions for this conference to display in the view
+        model.addAttribute("sessions", sessionRepo.findByConferenceConferenceId(id));
+        
+        return "conference/view";
         //conferenceRepo.save(conference);
         conferenceService.createConference(conference);
         return "redirect:/admin/dashboard"; // Redirect to dashboard after saving

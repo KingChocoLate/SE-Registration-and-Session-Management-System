@@ -1,70 +1,57 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
-<head th:replace="~{layout/main_layout :: head('Sign Up')}">
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<html lang="en" xmlns:th="http://www.thymeleaf.org" 
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/main_layout}">
+<head>
     <title>Sign Up</title>
 </head>
-<body class="bg-light">
+<body>
 
-    <div th:replace="~{layout/navbar :: navbar}"></div>
-
-    <div class="container mt-5">
-        <div class="row justify-content-center">
-            <div class="col-md-6 col-lg-5">
-                <div class="card shadow-lg border-0 rounded-lg">
-                    <div class="card-header bg-success text-white text-center py-3">
-                        <h3 class="mb-0">Create Account</h3>
+<div layout:fragment="content">
+    <div class="row justify-content-center align-items-center" style="min-height: 60vh;">
+        <div class="col-md-6 col-lg-5">
+            <div class="card shadow-lg border-0">
+                <div class="card-body p-5">
+                    <div class="text-center mb-4">
+                        <i class="bi bi-person-plus-fill fs-1 text-success"></i>
+                        <h3 class="fw-bold mt-2">Create Account</h3>
+                        <p class="text-muted">Join the conference system today</p>
                     </div>
-                    <div class="card-body p-4">
-                        
-                        <form th:action="@{/register}" method="post">
-                            
-                            <div th:if="${success}" class="alert alert-success">
-                                Registration successful! <a href="/login">Login here</a>.
-                            </div>
 
-                            <div th:if="${error}" class="alert alert-danger" th:text="${error}">
-                                Registration failed.
-                            </div>
+                    <form th:action="@{/register}" method="post">
+                        <div class="mb-3">
+                            <label for="username" class="form-label fw-bold small text-uppercase text-muted">Username</label>
+                            <input type="text" class="form-control bg-light" id="username" name="username" required>
+                        </div>
 
-                            <div class="form-floating mb-3">
-                                <input type="text" class="form-control" id="username" name="username" placeholder="Username" required>
-                                <label for="username">Username</label>
-                            </div>
+                        <div class="mb-3">
+                            <label for="password" class="form-label fw-bold small text-uppercase text-muted">Password</label>
+                            <input type="password" class="form-control bg-light" id="password" name="password" required>
+                            <div class="form-text">Must be at least 8 characters long.</div>
+                        </div>
 
-                            <div class="form-floating mb-3">
-                                <input type="email" class="form-control" id="email" name="email" placeholder="name@example.com" required>
-                                <label for="email">Email address</label>
-                            </div>
+                        <div class="mb-4">
+                            <label for="role" class="form-label fw-bold small text-uppercase text-muted">I am a...</label>
+                            <select class="form-select bg-light" id="role" name="role">
+                                <option value="PARTICIPANT">Participant (Attendee)</option>
+                                <option value="CHAIR">Session Chair (Reviewer)</option>
+                                <option value="ADMIN">Administrator</option>
+                            </select>
+                        </div>
 
-                            <div class="form-floating mb-3">
-                                <input type="password" class="form-control" id="password" name="password" placeholder="Password" required>
-                                <label for="password">Password</label>
-                            </div>
+                        <div class="d-grid mb-3">
+                            <button type="submit" class="btn btn-success btn-lg fw-bold">Register</button>
+                        </div>
 
-                            <div class="mb-3">
-                                <label class="form-label" for="role">I am a:</label>
-                                <select class="form-select" id="role" name="role">
-                                    <option value="ADMIN">Administrator</option>
-                                    <option value="CHAIR">Chair</option>
-                                    <option value="PARTICIPANT" selected>Attendee</option>
-                                    </select>
-                            </div>
-
-                            <div class="d-grid gap-2 mt-4">
-                                <button type="submit" class="btn btn-success btn-lg">Register</button>
-                            </div>
-                        </form>
-                    </div>
-                    <div class="card-footer text-center py-3">
-                        <div class="small"><a href="/login">Have an account? Go to Login</a></div>
-                    </div>
+                        <div class="text-center">
+                            <span class="text-muted">Already have an account?</span>
+                            <a th:href="@{/login}" class="text-decoration-none fw-bold">Login here</a>
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>
     </div>
-
-    <div th:replace="~{layout/main_layout :: footer}"></div>
+</div>
 </body>
 </html>
