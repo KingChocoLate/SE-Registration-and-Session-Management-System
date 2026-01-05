@@ -23,6 +23,17 @@ public class Session {
     // @Column(columnDefinition = "TEXT") 
     // private String description;
 
+    public enum SessionStatus {
+        PENDING,
+        APPROVED,
+        REJECTED,
+        SCHEDULED
+    }
+
+    // --- 2. ADD THIS FIELD ---
+    @Enumerated(EnumType.STRING)
+    private SessionStatus status;
+
     @NotNull(message = "Session time is required")
     @Column(name = "session_time")
     private LocalDateTime sessionTime;
@@ -105,4 +116,8 @@ public class Session {
     public void setRoom(Room room) {
         this.room = room;
     }
+
+    public SessionStatus getStatus() { return status; }
+    
+    public void setStatus(SessionStatus status) { this.status = status; }
 }
