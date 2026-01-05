@@ -33,13 +33,6 @@ public class AdminController {
         return "admin/dashboard";
     }
 
-    // --- ROOM MANAGEMENT ---
-    @GetMapping("/rooms")
-    public String rooms(Model model) {
-        model.addAttribute("rooms", roomRepo.findAll());
-        return "admin/rooms";
-    }
-
     // --- 1. SHOW CREATE FORM ---
     @GetMapping("/sessions/create")
     public String showCreateSessionForm(Model model) {
