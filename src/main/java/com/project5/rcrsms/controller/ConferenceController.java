@@ -1,29 +1,24 @@
 package com.project5.rcrsms.controller;
 
 import com.project5.rcrsms.Entity.Conference;
-import com.project5.rcrsms.Repository.ConferenceRepository;
-import com.project5.rcrsms.Repository.SessionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import com.project5.rcrsms.Service.ConferenceService;
 
 @Controller
 @RequestMapping("/conferences")
 public class ConferenceController {
 
     @Autowired
-    private ConferenceRepository conferenceRepo;
-    
-    // NEW: Inject SessionRepository so we can show sessions on the conference view
-    @Autowired
-    private SessionRepository sessionRepo;
+    private ConferenceService conferenceService;
 
     // 1. List All Conferences
     @GetMapping("") 
     public String listConferences(Model model) {
-        model.addAttribute("conferences", conferenceRepo.findAll());
-        return "conference/list"; 
+        model.addAttribute("conferences", conferenceService.getAllConferences());
+        return "conference/list"; // You'll need to create this file later if you want a public list
     }
 
     // 2. Show Create Form
@@ -51,5 +46,8 @@ public class ConferenceController {
         model.addAttribute("sessions", sessionRepo.findByConferenceConferenceId(id));
         
         return "conference/view";
+        //conferenceRepo.save(conference);
+        conferenceService.createConference(conference);
+        return "redirect:/admin/dashboard"; // Redirect to dashboard after saving
     }
 }
