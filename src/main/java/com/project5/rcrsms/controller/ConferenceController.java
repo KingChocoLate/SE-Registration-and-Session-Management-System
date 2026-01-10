@@ -6,6 +6,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import com.project5.rcrsms.Service.ConferenceService;
+import com.project5.rcrsms.Service.SessionService;
 
 @Controller
 @RequestMapping("/conferences")
@@ -13,6 +14,8 @@ public class ConferenceController {
 
     @Autowired
     private ConferenceService conferenceService;
+    @Autowired
+    private SessionService sessionService;
 
     // 1. List All Conferences
     @GetMapping("") 
@@ -31,23 +34,20 @@ public class ConferenceController {
     // 3. Save Conference
     @PostMapping("/save")
     public String saveConference(@ModelAttribute("conference") Conference conference) {
-        conferenceRepo.save(conference);
+        conferenceService.createConference(conference);
         return "redirect:/admin/dashboard"; 
     }
     
     // 4. NEW: View Conference Details (Fixes view.html)
     @GetMapping("/{id}")
     public String viewConference(@PathVariable Long id, Model model) {
-        Conference conference = conferenceRepo.findById(id)
+        Conference conference = conferenceService.getConferenceById(id)
             .orElseThrow(() -> new IllegalArgumentException("Invalid conference Id:" + id));
             
         model.addAttribute("conference", conference);
         // Load sessions for this conference to display in the view
-        model.addAttribute("sessions", sessionRepo.findByConferenceConferenceId(id));
+        model.addAttribute("sessions", sessionService.getSessionsByConferenceId(id));
         
         return "conference/view";
-        //conferenceRepo.save(conference);
-        conferenceService.createConference(conference);
-        return "redirect:/admin/dashboard"; // Redirect to dashboard after saving
     }
 }

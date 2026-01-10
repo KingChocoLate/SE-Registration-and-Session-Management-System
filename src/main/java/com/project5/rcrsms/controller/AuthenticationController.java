@@ -4,15 +4,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
 
+import com.project5.rcrsms.Security.CustomUserDetails;
 import com.project5.rcrsms.dto.LoginRequest;
 import com.project5.rcrsms.dto.LoginResponse;
 
-@Controller
+@RestController
 public class AuthenticationController {
 
     @Autowired
@@ -24,25 +26,29 @@ public class AuthenticationController {
         
         try {
             // Authenticate against the real database
-            authenticationManager.authenticate(
+            Authentication auth = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                     loginRequest.getUsername(),
                     loginRequest.getPassword()
                 )
             );
             
+            CustomUserDetails userDetails = (CustomUserDetails) auth.getPrincipal();
+
             // Authentication successful
             LoginResponse response = new LoginResponse(
-                    loginRequest.getUsername(),
-                    "Authentication successful"
+                userDetails.getId(),
+                userDetails.getUsername(),
+                userDetails.getRole(),
+                "Login successful",
+                true
             );
             return ResponseEntity.ok(response);
             
         } catch (AuthenticationException e) {
             // Authentication failed
-            return ResponseEntity.status(401).body(
-                new LoginResponse(null, "Invalid credentials")
-            );
+            LoginResponse errorResponse = new LoginResponse("Invalid credentials", false);
+            return ResponseEntity.status(401).body(errorResponse);
         }
     }
 }

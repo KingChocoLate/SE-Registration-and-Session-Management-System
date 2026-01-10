@@ -1,4 +1,4 @@
-package com.project5.rcrsms.config;
+package com.project5.rcrsms.Security;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -29,8 +29,8 @@ public class SecurityConfig {
         httpSecurity
             .csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/css/**", "/js/**", "/api/login", "/register", "/login", "/error", "/sessions").permitAll()
-                .requestMatchers("/admin/**").hasAnyAuthority("ADMIN")
+                .requestMatchers("/css/**", "/js/**", "/images/**", "/webjars/**", "/api/login", "/register", "/login", "/error", "/sessions").permitAll()
+                .requestMatchers("/admin/**").hasRole("ADMIN")
                 .requestMatchers("/registrations/add").authenticated()
                 .anyRequest().authenticated()
             )
