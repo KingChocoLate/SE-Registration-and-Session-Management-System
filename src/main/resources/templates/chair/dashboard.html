@@ -85,7 +85,7 @@
                                     class="btn btn-sm btn-outline-primary" 
                                     data-bs-toggle="modal" 
                                     th:data-bs-target="'#modal-' + ${s.sessionId}">
-                                <i class="bi bi-eye me-1"></i>View Details
+                                <i class="bi bi-people me-1"></i>Participants
                             </button>
                         </td>
                     </tr>
@@ -96,34 +96,49 @@
 
     <div th:each="s : ${mySessions}">
         <div class="modal fade" th:id="'modal-' + ${s.sessionId}" tabindex="-1" aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-dialog modal-dialog-centered modal-lg">
                 <div class="modal-content border-0 shadow">
                     <div class="modal-header bg-light">
                         <h5 class="modal-title fw-bold text-primary">
-                            <i class="bi bi-file-text me-2"></i>Session Details
+                            <i class="bi bi-people-fill me-2"></i>Manage Participants
                         </h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body p-4">
                         <h4 class="mb-3" th:text="${s.title}">Session Title</h4>
+                        <p class="text-muted small mb-4" th:text="${s.proposalAbstract}">Abstract...</p>
                         
-                        <div class="row mb-3">
-                            <div class="col-6">
-                                <small class="text-muted d-block text-uppercase fw-bold" style="font-size: 0.75rem;">Date & Time</small>
-                                <span class="fw-semibold" th:text="${#temporals.format(s.sessionTime, 'dd MMM yyyy, HH:mm')}">Date</span>
-                            </div>
-                            <div class="col-6">
-                                <small class="text-muted d-block text-uppercase fw-bold" style="font-size: 0.75rem;">Location</small>
-                                <span class="fw-semibold" th:text="${s.room.name}">Room</span>
-                            </div>
+                        <h6 class="fw-bold text-success text-uppercase small mb-3">Registered Users</h6>
+
+                        <div th:if="${s.registrations.empty}" class="alert alert-light border text-center small text-muted">
+                            <i class="bi bi-person-x fs-5 d-block mb-1"></i>
+                            No participants have registered yet.
                         </div>
 
-                        <hr class="text-muted opacity-25">
+                        <div th:unless="${s.registrations.empty}" class="table-responsive border rounded">
+                            <table class="table table-sm table-striped mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th class="ps-3">Username</th>
+                                        <th class="text-end pe-3">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr th:each="reg : ${s.registrations}">
+                                        <td class="ps-3 fw-bold" th:text="${reg.user.username}">User</td>
+                                        <td class="text-end pe-3">
+                                            <form th:action="@{'/registrations/remove/' + ${reg.registrationId}}" method="post" class="d-inline">
+                                                <button type="submit" class="btn btn-xs btn-outline-danger border-0" 
+                                                        onclick="return confirm('Remove this user from the session?');">
+                                                    <i class="bi bi-trash"></i> Remove
+                                                </button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
 
-                        <h6 class="fw-bold">Proposal Abstract</h6>
-                        <p class="text-muted" th:text="${s.proposalAbstract ?: 'No abstract provided for this session.'}">
-                            Description goes here...
-                        </p>
                     </div>
                     <div class="modal-footer bg-light border-0">
                         <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Close</button>

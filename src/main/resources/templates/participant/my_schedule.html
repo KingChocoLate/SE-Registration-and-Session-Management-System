@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" 
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/main_layout}">
+<head>
+    <title>My Schedule</title>
+</head>
+<body>
+
+<div layout:fragment="content">
+    
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="fw-bold text-primary">
+                <i class="bi bi-calendar-check me-2"></i>My Schedule
+            </h2>
+            <p class="text-muted">Manage your upcoming sessions and events.</p>
+        </div>
+        <a th:href="@{/conferences}" class="btn btn-outline-primary">
+            <i class="bi bi-plus-lg me-1"></i>Browse More Sessions
+        </a>
+    </div>
+
+    <div th:if="${successMessage}" class="alert alert-success alert-dismissible fade show">
+        <i class="bi bi-check-circle me-2"></i><span th:text="${successMessage}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+    <div th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show">
+        <i class="bi bi-exclamation-octagon me-2"></i><span th:text="${errorMessage}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+
+    <div class="card border-0 shadow-sm rounded-3 overflow-hidden">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="bg-light text-uppercase text-muted small">
+                    <tr>
+                        <th class="ps-4">Session Details</th>
+                        <th>Time & Location</th>
+                        <th>Conference</th>
+                        <th class="text-end pe-4">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="reg : ${registrations}">
+                        <td class="ps-4 py-3">
+                            <h6 class="fw-bold text-dark mb-0" th:text="${reg.session.title}">Session Title</h6>
+                            <span class="badge bg-info bg-opacity-10 text-info border border-info rounded-pill mt-1" style="font-size: 0.7rem;">Registered</span>
+                        </td>
+                        <td>
+                            <div class="d-flex flex-column">
+                                <span class="fw-bold text-dark">
+                                    <i class="bi bi-clock me-1 text-muted"></i>
+                                    <span th:text="${#temporals.format(reg.session.sessionTime, 'MMM dd, HH:mm')}">Time</span>
+                                </span>
+                                <small class="text-muted">
+                                    <i class="bi bi-geo-alt me-1"></i>
+                                    <span th:text="${reg.session.room.name}">Room</span>
+                                </small>
+                            </div>
+                        </td>
+                        <td>
+                             <span class="text-muted small" th:text="${reg.session.conference.name}">Conf Name</span>
+                        </td>
+                        <td class="text-end pe-4">
+                            <form th:action="@{'/registrations/cancel/' + ${reg.registrationId}}" method="post" class="d-inline">
+                                <button type="submit" 
+                                        class="btn btn-sm btn-outline-danger" 
+                                        onclick="return confirm('Are you sure you want to cancel your registration?');">
+                                    <i class="bi bi-x-circle me-1"></i>Cancel
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+
+                    <tr th:if="${#lists.isEmpty(registrations)}">
+                        <td colspan="4" class="text-center py-5">
+                            <div class="text-muted opacity-50 mb-3">
+                                <i class="bi bi-calendar-x" style="font-size: 3rem;"></i>
+                            </div>
+                            <h5>You haven't registered for any sessions yet.</h5>
+                            <a th:href="@{/conferences}" class="btn btn-primary mt-3">Find a Session</a>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>
