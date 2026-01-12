@@ -33,17 +33,10 @@ public class AdminController {
         return "admin/dashboard";
     }
 
-    // --- 1. SHOW CREATE FORM ---
-    @GetMapping("/sessions/create")
-    public String showCreateSessionForm(Model model) {
-        model.addAttribute("session", new Session());
-        model.addAttribute("conferences", conferenceRepo.findAll());
-        model.addAttribute("rooms", roomRepo.findAll());
-        
-        // This uses the NEW method we added to UserRepository
-        model.addAttribute("chairs", userRepo.findByRole(Role.CHAIR)); 
-        
-        return "admin/session_form"; 
+    @GetMapping("/schedule")
+    public String schedule(Model model) {
+        model.addAttribute("sessions", sessionRepo.findAll());
+        return "admin/schedule";
     }
 
     // --- 2. SAVE SESSION ---

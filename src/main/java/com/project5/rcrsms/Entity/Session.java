@@ -22,6 +22,8 @@ public class Session {
     // @Size(min = 10, message = "Please provide a description of at least 10 characters")
     // @Column(columnDefinition = "TEXT") 
     // private String description;
+    @Column(name = "proposal_abstract", columnDefinition = "TEXT")
+    private String proposalAbstract;
 
     public enum SessionStatus {
         PENDING,
@@ -120,4 +122,12 @@ public class Session {
     public SessionStatus getStatus() { return status; }
     
     public void setStatus(SessionStatus status) { this.status = status; }
+
+    public String getProposalAbstract() {
+        return proposalAbstract;
+    }
+
+    public void setProposalAbstract(String proposalAbstract) {
+        this.proposalAbstract = proposalAbstract;
+    }
 }

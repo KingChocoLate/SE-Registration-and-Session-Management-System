@@ -96,27 +96,24 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr th:each="session : ${recentSessions}">
+                        <tr th:each="s : ${recentSessions}">
                             <td>
-                                <span class="fw-bold" th:text="${session.title}">Session Title</span>
-                                <div class="small text-muted" th:text="${session.conference.name}">Conf Name</div>
+                                <span class="fw-bold" th:text="${s.title}">Session Title</span>
+                                <div class="small text-muted" th:text="${s.conference.name}">Conf Name</div>
                             </td>
-                            <td th:text="${#temporals.format(session.sessionTime, 'dd-MM-yyyy HH:mm')}">Date</td>
+                            <td th:text="${#temporals.format(s.sessionTime, 'dd-MM-yyyy HH:mm')}">Date</td>
                             <td>
                                 <div class="d-flex align-items-center">
                                     <div class="avatar-circle bg-light text-primary me-2">
                                         <i class="bi bi-person"></i>
                                     </div>
-                                    <span th:text="${session.chair != null ? session.chair.username : 'Unassigned'}">Name</span>
+                                    <span th:text="${s.chair != null ? s.chair.username : 'Unassigned'}">Name</span>
                                 </div>
                             </td>
                             <td><span class="badge bg-success rounded-pill">Active</span></td>
                             <td>
-                                <a th:href="@{'/sessions/edit/' + ${session.sessionId}}" class="btn btn-sm btn-light">Edit</a>
+                                <a th:href="@{'/sessions/edit/' + ${s.sessionId}}" class="btn btn-sm btn-light">Edit</a>
                             </td>
-                        </tr>
-                        <tr th:if="${#lists.isEmpty(recentSessions)}">
-                            <td colspan="5" class="text-center py-4 text-muted">No recent sessions found.</td>
                         </tr>
                     </tbody>
                 </table>
