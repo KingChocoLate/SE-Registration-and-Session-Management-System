@@ -18,6 +18,22 @@ public class Session {
     @Size(min = 3, max = 200, message = "Title must be between 3 and 200 characters")
     private String title;
 
+    // @NotBlank(message = "Description is required")
+    // @Size(min = 10, message = "Please provide a description of at least 10 characters")
+    // @Column(columnDefinition = "TEXT") 
+    // private String description;
+
+    public enum SessionStatus {
+        PENDING,
+        APPROVED,
+        REJECTED,
+        SCHEDULED
+    }
+
+    // --- 2. ADD THIS FIELD ---
+    @Enumerated(EnumType.STRING)
+    private SessionStatus status;
+
     @NotNull(message = "Session time is required")
     @Column(name = "session_time")
     private LocalDateTime sessionTime;
@@ -30,6 +46,10 @@ public class Session {
     @JoinColumn(name = "conference_id", nullable = false)
     @NotNull(message = "Conference is required")
     private Conference conference;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "room_id", nullable = false)
+    private Room room;
 
     @OneToMany(mappedBy = "session", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Registration> registrations = new ArrayList<>();
@@ -52,6 +72,9 @@ public class Session {
     public void setTitle(String title) {
         this.title = title;
     }
+
+    // public String getDescription() { return description; }
+    // public void setDescription(String description) { this.description = description; }
 
     public LocalDateTime getSessionTime() {
         return sessionTime;
@@ -84,4 +107,17 @@ public class Session {
     public void setRegistrations(List<Registration> registrations) {
         this.registrations = registrations;
     }
+
+    // --- NEW GETTERS AND SETTERS FOR ROOM ---
+    public Room getRoom() {
+        return room;
+    }
+
+    public void setRoom(Room room) {
+        this.room = room;
+    }
+
+    public SessionStatus getStatus() { return status; }
+    
+    public void setStatus(SessionStatus status) { this.status = status; }
 }

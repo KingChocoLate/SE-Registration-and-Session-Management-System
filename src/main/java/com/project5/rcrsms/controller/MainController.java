@@ -1,15 +1,58 @@
 package com.project5.rcrsms.controller;
 
+import java.security.Principal;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import com.project5.rcrsms.Entity.Role;
+import com.project5.rcrsms.Entity.UserEntity;
+import com.project5.rcrsms.Repository.UserRepository;
+
 @Controller
 public class MainController {
 
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+    
+    @Autowired
+    private UserRepository userRepository;
+
     @GetMapping("/")
-    public String index(Model model) {
-        model.addAttribute("title", "Welcome to ConfSys");
-        return "index";
+    public String index(Model model, Principal principal) {
+        // If user is not authenticated, show public landing page
+        if (principal == null) {
+            model.addAttribute("title", "Welcome to ConfSys");
+            return "index";
+        }
+        
+        // Get the authenticated user
+        String username = principal.getName();
+        UserEntity user = userRepository.findByUsername(username)
+                .orElse(null);
+        
+        if (user == null) {
+            return "redirect:/login";
+        }
+        
+        // Redirect based on user role
+        switch (user.getRole()) {
+            case ADMIN:
+                return "redirect:/admin/dashboard";
+            case CHAIR:
+                return "redirect:/sessions";
+            case PARTICIPANT:
+                return "redirect:/conferences";
+            default:
+                model.addAttribute("title", "Welcome to ConfSys");
+                return "index";
+        }
     }
 
     @GetMapping("/login")
@@ -21,6 +64,38 @@ public class MainController {
     public String register(Model model) {
         model.addAttribute("title", "Sign Up");
         return "auth/register";
+    }
+    
+    @PostMapping("/register")
+    public String registerUser(
+            @RequestParam("username") String username,
+            @RequestParam("password") String password,
+            @RequestParam(name = "role", defaultValue = "PARTICIPANT") String role,
+            RedirectAttributes redirectAttributes) {
+        
+        try {
+            // Check if username already exists
+            if (userRepository.findByUsername(username).isPresent()) {
+                redirectAttributes.addFlashAttribute("error", "Username already exists");
+                return "redirect:/register";
+            }
+            
+            // Create new user with encoded password
+            UserEntity newUser = new UserEntity();
+            newUser.setUsername(username);
+            newUser.setPassword(passwordEncoder.encode(password));
+            newUser.setRole(Role.valueOf(role.toUpperCase()));
+            
+            // Save to database
+            userRepository.save(newUser);
+            
+            redirectAttributes.addFlashAttribute("success", "Registration successful! Please login.");
+            return "redirect:/login";
+            
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "Registration failed: " + e.getMessage());
+            return "redirect:/register";
+        }
     }
 
     @GetMapping("/403")
