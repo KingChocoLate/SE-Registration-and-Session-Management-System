@@ -32,6 +32,13 @@ public class AdminController {
         model.addAttribute("recentSessions", sessionRepo.findAll());
         return "admin/dashboard";
     }
+
+    @GetMapping("/schedule")
+    public String schedule(Model model) {
+        model.addAttribute("sessions", sessionRepo.findAll());
+        return "admin/schedule";
+    }
+
     // --- 2. SAVE SESSION ---
     @PostMapping("/sessions/save")
     public String saveSession(@ModelAttribute Session session) {

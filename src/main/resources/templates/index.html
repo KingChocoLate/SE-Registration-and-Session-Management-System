@@ -1,46 +1,106 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org" 
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
       layout:decorate="~{layout/main_layout}">
 <head>
-    <title>Home</title>
+    <title>Conference Home</title>
+    <style>
+        .hero-section {
+            background: linear-gradient(135deg, #0d6efd 0%, #0a58ca 100%);
+            color: white;
+            padding: 4rem 2rem;
+            border-radius: 1rem;
+            margin-bottom: 3rem;
+        }
+        .feature-icon {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+        .stat-card {
+            border: none;
+            transition: transform 0.2s;
+        }
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+    </style>
 </head>
 <body>
 
 <div layout:fragment="content">
-    <div class="p-5 mb-4 rounded-3 hero-bg text-center shadow">
-        <div class="py-5">
-            <h1 class="display-4 fw-bold">Research Conference 2026</h1>
-            <p class="col-md-8 fs-4 mx-auto opacity-75">
-                Join researchers, innovators, and industry leaders from around the world.
-            </p>
-            <div class="d-flex justify-content-center gap-3 mt-4">
-                <a href="/sessions/submit" class="btn btn-light btn-lg px-4 text-primary fw-bold">
-                    <i class="bi bi-send me-2"></i>Submit Paper
-                </a>
-                <a href="/sessions" class="btn btn-outline-light btn-lg px-4">
-                    <i class="bi bi-calendar3 me-2"></i>View Schedule
+
+    <div class="hero-section text-center shadow">
+        <h1 class="display-3 fw-bold mb-3">Research Conference 2026</h1>
+        <p class="lead mb-4" style="opacity: 0.9;">
+            Exploring the Future of Technology & Innovation.<br>
+            <strong>Phnom Penh, Cambodia • January 15-17, 2026</strong>
+        </p>
+        
+        <div class="d-flex justify-content-center gap-3">
+            <a th:href="@{/sessions}" class="btn btn-light btn-lg fw-bold px-5 shadow-sm text-primary">
+                <i class="bi bi-calendar-event me-2"></i>Browse Schedule
+            </a>
+
+            <div sec:authorize="hasRole('ADMIN')">
+                <a th:href="@{/admin/dashboard}" class="btn btn-warning btn-lg fw-bold px-4 shadow-sm text-dark">
+                    <i class="bi bi-speedometer2 me-2"></i>Admin Dashboard
                 </a>
             </div>
         </div>
     </div>
 
-    <div class="row align-items-md-stretch">
-        <div class="col-md-6 mb-4">
-            <div class="h-100 p-5 bg-white border rounded-3 shadow-sm">
-                <h2 class="text-primary"><i class="bi bi-file-earmark-text me-2"></i>For Researchers</h2>
-                <p>Submit your latest findings and get reviewed by our expert panel of chairs. Track your submission status in real-time.</p>
-                <a href="/sessions/submit" class="btn btn-outline-primary" type="button">Call for Papers</a>
+    <div class="row text-center mb-5 g-4">
+        <div class="col-md-4">
+            <div class="card stat-card h-100 shadow-sm py-4">
+                <div class="text-primary mb-2"><i class="bi bi-mic fs-1"></i></div>
+                <h3 class="fw-bold">15+ Speakers</h3>
+                <p class="text-muted mb-0">World-class experts</p>
             </div>
         </div>
-        <div class="col-md-6 mb-4">
-            <div class="h-100 p-5 bg-white border rounded-3 shadow-sm">
-                <h2 class="text-success"><i class="bi bi-people me-2"></i>For Attendees</h2>
-                <p>Browse the schedule, find rooms, view conference details, and build your own personal agenda.</p>
-                <a href="/sessions" class="btn btn-outline-success" type="button">Browse Sessions</a>
+        <div class="col-md-4">
+            <div class="card stat-card h-100 shadow-sm py-4">
+                <div class="text-success mb-2"><i class="bi bi-hdd-network fs-1"></i></div>
+                <h3 class="fw-bold">5 Tracks</h3>
+                <p class="text-muted mb-0">AI, Software, Security & More</p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card stat-card h-100 shadow-sm py-4">
+                <div class="text-warning mb-2"><i class="bi bi-people-fill fs-1"></i></div>
+                <h3 class="fw-bold">200+ Attendees</h3>
+                <p class="text-muted mb-0">Networking opportunities</p>
             </div>
         </div>
     </div>
+
+    <div class="row align-items-center mb-5">
+        <div class="col-lg-6">
+            <h2 class="fw-bold text-dark mb-3">Why Attend?</h2>
+            <p class="lead text-muted">Join us for three days of inspiring talks, hands-on workshops, and networking with industry leaders.</p>
+            <ul class="list-unstyled mt-4">
+                <li class="mb-3 d-flex align-items-center">
+                    <i class="bi bi-check-circle-fill text-success me-3 fs-4"></i>
+                    <span>Access to all recorded sessions</span>
+                </li>
+                <li class="mb-3 d-flex align-items-center">
+                    <i class="bi bi-check-circle-fill text-success me-3 fs-4"></i>
+                    <span>Certificate of Participation</span>
+                </li>
+                <li class="mb-3 d-flex align-items-center">
+                    <i class="bi bi-check-circle-fill text-success me-3 fs-4"></i>
+                    <span>Exclusive Q&A with Keynote Speakers</span>
+                </li>
+            </ul>
+        </div>
+        <div class="col-lg-6 text-center">
+            <div class="bg-light rounded-3 p-5 border dashed-border">
+                <i class="bi bi-laptop fs-1 text-muted opacity-50"></i>
+                <p class="text-muted mt-3">Conference Schedule Live Now</p>
+            </div>
+        </div>
+    </div>
+
 </div>
 </body>
 </html>
