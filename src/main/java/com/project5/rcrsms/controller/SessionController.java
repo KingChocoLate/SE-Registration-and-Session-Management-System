@@ -6,10 +6,14 @@ import com.project5.rcrsms.Repository.ConferenceRepository;
 import com.project5.rcrsms.Repository.UserRepository;
 import com.project5.rcrsms.Repository.RoomRepository;
 import com.project5.rcrsms.Service.SessionService;
+
+import jakarta.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
@@ -52,8 +56,17 @@ public class SessionController {
 
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/save")
-    public String saveSession(@ModelAttribute("session") Session session, Model model) { // Added Model
-        // 1. Set Defaults
+    public String saveSession(@Valid @ModelAttribute("session") Session session, 
+                              BindingResult result, 
+                              Model model) { 
+        
+        // 1. CHECK FOR VALIDATION ERRORS
+        if (result.hasErrors()) {
+            setupFormModels(model); 
+            return "session/create"; 
+        }
+
+        // 2. SET DEFAULTS
         if (session.getSessionTime() == null) {
             session.setSessionTime(LocalDateTime.now());
         }
@@ -62,7 +75,7 @@ public class SessionController {
         }
 
         try {
-            // 2. Try to Save
+            // 3. SAVE LOGIC
             if (session.getSessionId() != null) {
                 sessionService.updateSession(session.getSessionId(), session);
             } else {
@@ -71,6 +84,7 @@ public class SessionController {
             return "redirect:/admin/schedule";
 
         } catch (RuntimeException e) {
+            // Catch other database errors (like duplicates)
             model.addAttribute("errorMessage", e.getMessage());
             setupFormModels(model);
             return "session/create";
