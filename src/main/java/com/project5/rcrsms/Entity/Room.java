@@ -1,6 +1,7 @@
 package com.project5.rcrsms.Entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.*; // Import for Validation
 
 @Entity
 @Table(name = "rooms")
@@ -10,13 +11,17 @@ public class Room {
     @Column(name = "room_id")
     private Long roomId;
 
+    @NotBlank(message = "Room name is required") // Added Validation
     @Column(nullable = false)
     private String name;
 
+    @NotNull(message = "Capacity is required") // Added Validation
+    @Min(value = 1, message = "Capacity must be at least 1")
+    @Max(value = 1000, message = "Capacity cannot exceed 1000")
     @Column(nullable = false)
     private Integer capacity;
 
-    // --- ADD THIS FIELD OR THE APP WILL CRASH ---
+    @NotBlank(message = "Location is required") // Added Validation
     @Column(nullable = false)
     private String location; 
 
@@ -31,7 +36,6 @@ public class Room {
     public Integer getCapacity() { return capacity; }
     public void setCapacity(Integer capacity) { this.capacity = capacity; }
 
-    // --- ADD GETTER AND SETTER ---
     public String getLocation() { return location; }
     public void setLocation(String location) { this.location = location; }
 }

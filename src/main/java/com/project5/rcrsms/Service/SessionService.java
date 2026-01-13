@@ -120,7 +120,9 @@ public class SessionService {
         session.setSessionTime(sessionDetails.getSessionTime());
         session.setConference(sessionDetails.getConference());
         session.setChair(sessionDetails.getChair());
-
+        session.setProposalAbstract(sessionDetails.getProposalAbstract()); 
+        session.setRoom(sessionDetails.getRoom());                         
+        session.setStatus(sessionDetails.getStatus());
         validateSession(session);
         return sessionRepository.save(session);
     }

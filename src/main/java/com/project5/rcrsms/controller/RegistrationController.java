@@ -1,108 +1,77 @@
 package com.project5.rcrsms.controller;
 
 import com.project5.rcrsms.Entity.Registration;
-import com.project5.rcrsms.Entity.UserEntity;
 import com.project5.rcrsms.Service.RegistrationService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import jakarta.servlet.http.HttpServletRequest; // Import this
 
-import java.util.List;
 import java.security.Principal;
-import com.project5.rcrsms.Repository.RegistrationRepository;
-import com.project5.rcrsms.Repository.SessionRepository;
-import com.project5.rcrsms.Repository.UserRepository;
+import java.util.List;
 
 @Controller
-@RequestMapping("/api/registrations")
+@RequestMapping("/registrations")
 public class RegistrationController {
 
-    @Autowired
-    private RegistrationRepository registrationRepo;
+    @Autowired private RegistrationService registrationService;
 
-    @Autowired
-    private SessionRepository sessionRepo;
-
-    @Autowired
-    private UserRepository userRepo;
-
-    @Autowired
-    private RegistrationService registrationService;
-
-    /**
-     * Register an attendee for a session
-     */
-    @PostMapping("/add")
-    public String register(@RequestParam("sessionId") Long sessionId, Principal principal, RedirectAttributes ra){
-        UserEntity user = userRepo.findByUsername(principal.getName()).orElseThrow(() -> new IllegalStateException("Authenticated user not found: " + principal.getName()));;
-
-        // LOGIC: Prevent duplicate
-        if (registrationRepo.existsByUser_userIdAndSession_sessionId(user.getUserId(), sessionId)) {
-            ra.addFlashAttribute("error", "You are already registered for this session.");
-            return "redirect:/sessions";
-        }
-
-        Registration reg = new Registration();
-        reg.setUser(user);
-        reg.setSession(sessionRepo.findById(sessionId).orElse(null));
-        registrationRepo.save(reg);
-
-        ra.addFlashAttribute("success", "Registration successful!");
-        return "redirect:/sessions";
-    }
-
-    /**
-     * Get all registrations for a session
-     */
-    @GetMapping("/session/{sessionId}")
-    public ResponseEntity<List<Registration>> getRegistrationsBySession(
-            @PathVariable Long sessionId) {
-        List<Registration> registrations = registrationService.getRegistrationsBySession(sessionId);
-        return ResponseEntity.ok(registrations);
-    }
-
-    /**
-     * Get all registrations for an attendee
-     */
-    @GetMapping("/attendee/{attendeeId}")
-    public ResponseEntity<List<Registration>> getRegistrationsByAttendee(
-            @PathVariable Long attendeeId) {
-        List<Registration> registrations = registrationService.getRegistrationsByAttendee(attendeeId);
-        return ResponseEntity.ok(registrations);
-    }
-
-    /**
-     * Cancel a registration
-     */
-    @DeleteMapping("/{registrationId}")
-    public ResponseEntity<?> cancelRegistration(@PathVariable Long registrationId) {
+    // --- 1. JOIN SESSION ---
+    @PreAuthorize("isAuthenticated()")
+    @PostMapping("/join/{sessionId}")
+    public String joinSession(@PathVariable Long sessionId, 
+                              Principal principal, 
+                              RedirectAttributes ra,
+                              HttpServletRequest request) { // Add Request
         try {
-            registrationService.cancelRegistration(registrationId);
-            return ResponseEntity.noContent().build();
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
+            registrationService.registerUser(principal.getName(), sessionId);
+            ra.addFlashAttribute("successMessage", "Registration successful! You are now attending this session.");
+        } catch (RuntimeException e) {
+            ra.addFlashAttribute("errorMessage", e.getMessage());
         }
+        
+        // FIX: Redirect back to the page the user came from (Catalog or Details)
+        String referer = request.getHeader("Referer");
+        return "redirect:" + (referer != null ? referer : "/conferences"); 
     }
 
-    /**
-     * Get available spots for a session
-     */
-    @GetMapping("/session/{sessionId}/available")
-    public ResponseEntity<Integer> getAvailableSpots(@PathVariable Long sessionId) {
+    // --- 2. CANCEL REGISTRATION ---
+    @PreAuthorize("isAuthenticated()")
+    @PostMapping("/cancel/{regId}")
+    public String cancelRegistration(@PathVariable Long regId, Principal principal, RedirectAttributes ra) {
         try {
-            int availableSpots = registrationService.getAvailableSpots(sessionId);
-            return ResponseEntity.ok(availableSpots);
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body(0);
+            registrationService.cancelRegistration(principal.getName(), regId);
+            ra.addFlashAttribute("successMessage", "Registration cancelled.");
+        } catch (RuntimeException e) {
+            ra.addFlashAttribute("errorMessage", e.getMessage());
         }
+        return "redirect:/registrations/my-schedule";
     }
 
-    @GetMapping("/view/{id}")
-        public String viewParticipants(@PathVariable("id") Long id, Model model) {
-            model.addAttribute("participants", registrationRepo.findBySession_sessionId(id));
-            return "registration-view";
-        }   
+    // --- 3. VIEW MY SCHEDULE ---
+    @PreAuthorize("isAuthenticated()")
+    @GetMapping("/my-schedule")
+    public String viewMySchedule(Model model, Principal principal) {
+        List<Registration> myRegs = registrationService.getMyRegistrations(principal.getName());
+        model.addAttribute("registrations", myRegs);
+        return "participant/my_schedule";
+    }
+
+    // --- 4. ADMIN/CHAIR REMOVE PARTICIPANT ---
+    @PreAuthorize("hasAnyRole('ADMIN', 'CHAIR')")
+    @PostMapping("/remove/{regId}")
+    public String removeParticipant(@PathVariable Long regId, HttpServletRequest request, RedirectAttributes ra) {
+        try {
+            registrationService.deleteRegistration(regId);
+            ra.addFlashAttribute("successMessage", "Participant removed from session.");
+        } catch (RuntimeException e) {
+            ra.addFlashAttribute("errorMessage", e.getMessage());
+        }
+        // Redirect back to where they clicked (Dashboard or List)
+        String referer = request.getHeader("Referer");
+        return "redirect:" + (referer != null ? referer : "/");
+    }
 }
