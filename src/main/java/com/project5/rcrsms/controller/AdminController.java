@@ -24,7 +24,6 @@ public class AdminController {
     @Autowired private SessionRepository sessionRepo;
     @Autowired private SessionService sessionService; 
     @Autowired private ConferenceRepository conferenceRepo;
-    @Autowired private RoomRepository roomRepo;
     @Autowired private UserRepository userRepo;
 
     // --- 1. DASHBOARD ---
@@ -70,7 +69,7 @@ public class AdminController {
 
     // Delete User Logic
     @GetMapping("/users/delete/{id}")
-    public String deleteUser(@PathVariable Long id, RedirectAttributes ra) {
+    public String deleteUser(@PathVariable("id") Long id, RedirectAttributes ra) {
         if (userRepo.existsById(id)) {
             userRepo.deleteById(id);
             ra.addFlashAttribute("successMessage", "User deleted successfully.");
