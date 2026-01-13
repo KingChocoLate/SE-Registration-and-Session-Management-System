@@ -96,7 +96,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr th:each="session : ${recentSessions}">
+                        <tr th:each="Session : ${recentSessions}">
                             <td>
                                 <span class="fw-bold" th:text="${session.title}">Session Title</span>
                                 <div class="small text-muted" th:text="${session.conference.name}">Conf Name</div>
