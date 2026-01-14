@@ -200,5 +200,24 @@ public class SessionService {
                 throw new IllegalArgumentException("Session time must be within conference dates");
             }
         }
+
+        if (session.getRoom() != null && session.getSessionTime() != null) {
+            boolean isOccupied = sessionRepository.existsByRoom_RoomIdAndSessionTime(
+            session.getRoom().getRoomId(), 
+            session.getSessionTime()
+        );
+    
+        //If updating, we must exclude "self" from the check
+        if (session.getSessionId() != null) {
+            Session existing = sessionRepository.findById(session.getSessionId()).orElse(null);
+            //throw error if it's a DIFFERENT session occupying the room
+            if (isOccupied && existing != null && 
+                existing.getSessionTime().isEqual(session.getSessionTime())) {
+                throw new IllegalArgumentException("Room is already booked at this time!");
+            }
+        } else if (isOccupied) {
+            throw new IllegalArgumentException("Room is already booked at this time!");
+        }
+        }
     }
 }

@@ -86,8 +86,7 @@
 
                         <td>
                             <div th:if="${s.chair != null}" class="d-flex align-items-center">
-                                <div class="avatar-circle bg-success text-white small rounded-circle d-flex align-items-center justify-content-center me-2" 
-                                     style="width: 32px; height: 32px;">
+                                <div class="avatar-circle bg-success text-white small rounded-circle d-flex align-items-center justify-content-center me-2 w-[32px] h-[32px]">
                                     <i class="bi bi-person-fill"></i>
                                 </div>
                                 <span class="fw-semibold text-dark" th:text="${s.chair.username}">Name</span>
@@ -115,8 +114,6 @@
                             </a>
                         </td>
                     </tr>
-<<<<<<< HEAD
-=======
 
                     <tr th:if="${#lists.isEmpty(sessions)}">
                         <td colspan="5" class="text-center py-5">
@@ -131,7 +128,6 @@
                         </td>
                     </tr>
 
->>>>>>> 04e47b2d741f0dd3ab22da75c8bba2f4fa44e2d2
                 </tbody>
             </table>
             
