@@ -15,12 +15,38 @@ import java.util.Optional;
 @Transactional
 public class ConferenceService {
     
-    @Autowired
     private final ConferenceRepository conferenceRepository;
 
-    
+    @Autowired
     public ConferenceService(ConferenceRepository conferenceRepository) {
         this.conferenceRepository = conferenceRepository;
+    }
+
+    @Transactional(readOnly = true)
+    public List<Conference> getConferencesByFilter(String filter) {
+        LocalDate today = LocalDate.now();
+
+        if (filter == null) {
+            return conferenceRepository.findByStartDateAfterOrderByStartDateAsc(today);
+        }
+
+        switch (filter.toLowerCase()) {
+            case "past":
+                // FIX: Matches Repository "findByEndDateBeforeOrderByStartDateDesc"
+                return conferenceRepository.findByEndDateBeforeOrderByStartDateDesc(today);
+                
+            case "ongoing":
+                // FIX: Matches Repository "findByStartDateBeforeAndEndDateAfter..."
+                return conferenceRepository.findByStartDateBeforeAndEndDateAfterOrderByStartDateAsc(today, today);
+                
+            case "all":
+                return conferenceRepository.findAll();
+                
+            case "upcoming":
+            default:
+                // FIX: Matches Repository "findByStartDateAfter..."
+                return conferenceRepository.findByStartDateAfterOrderByStartDateAsc(today);
+        }
     }
 
     public Conference createConference(Conference conference) {
@@ -61,13 +87,15 @@ public class ConferenceService {
     @Transactional(readOnly = true)
     public List<Conference> getUpcomingConferences() {
         LocalDate today = LocalDate.now();
-        return conferenceRepository.findByStartDateGreaterThanEqualOrderByStartDateAsc(today);
+        // Updated to match the new strict "Future" logic
+        return conferenceRepository.findByStartDateAfterOrderByStartDateAsc(today);
     }
 
     @Transactional(readOnly = true)
     public List<Conference> getPastConferences() {
         LocalDate today = LocalDate.now();
-        return conferenceRepository.findByEndDateLessThanOrderByEndDateDesc(today);
+        // Updated to match the new strict "Past" logic
+        return conferenceRepository.findByEndDateBeforeOrderByStartDateDesc(today);
     }
 
     public Conference updateConference(Long id, Conference conferenceDetails) {

@@ -1,6 +1,9 @@
 package com.project5.rcrsms.controller;
 
 import com.project5.rcrsms.Entity.Conference;
+
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -19,9 +22,16 @@ public class ConferenceController {
 
     // 1. List All Conferences
     @GetMapping("") 
-    public String listConferences(Model model) {
-        model.addAttribute("conferences", conferenceService.getAllConferences());
-        return "conference/list"; // You'll need to create this file later if you want a public list
+    public String listConferences(
+            @RequestParam(name = "filter", defaultValue = "upcoming") String filter,
+            Model model) {
+
+        List<Conference> conferences = conferenceService.getConferencesByFilter(filter);
+
+        model.addAttribute("conferences", conferences);
+        model.addAttribute("currentFilter", filter);
+        
+        return "conference/list";
     }
 
     // 2. Show Create Form
@@ -33,9 +43,14 @@ public class ConferenceController {
 
     // 3. Save Conference
     @PostMapping("/save")
-    public String saveConference(@ModelAttribute("conference") Conference conference) {
-        conferenceService.createConference(conference);
-        return "redirect:/admin/dashboard"; 
+    public String saveConference(@ModelAttribute("conference") Conference conference, Model model) {
+        try {
+            conferenceService.createConference(conference);
+            return "redirect:/conferences"; 
+        } catch (IllegalArgumentException e) {
+            model.addAttribute("errorMessage", e.getMessage());
+            return "conference/create";
+        } 
     }
     
     // 4. NEW: View Conference Details (Fixes view.html)

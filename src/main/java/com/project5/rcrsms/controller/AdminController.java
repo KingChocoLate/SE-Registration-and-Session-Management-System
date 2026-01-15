@@ -3,7 +3,6 @@ package com.project5.rcrsms.controller;
 import com.project5.rcrsms.Entity.Session;
 import com.project5.rcrsms.Entity.Session.SessionStatus;
 import com.project5.rcrsms.Repository.ConferenceRepository;
-import com.project5.rcrsms.Repository.RoomRepository;
 import com.project5.rcrsms.Repository.SessionRepository;
 import com.project5.rcrsms.Repository.UserRepository;
 import com.project5.rcrsms.Service.SessionService; // Import Service

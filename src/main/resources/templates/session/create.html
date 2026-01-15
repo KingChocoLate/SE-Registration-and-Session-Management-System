@@ -64,12 +64,14 @@
                             </div>
 
                             <div class="col-12">
-                                <label class="form-label fw-bold">Abstract / Description <span class="text-danger">*</span></label>
+                                <label class="form-label fw-bold">Abstract / Description (Optional)</label>
+    
                                 <textarea th:field="*{proposalAbstract}" 
-                                          class="form-control" 
-                                          rows="4" 
-                                          th:classappend="${#fields.hasErrors('proposalAbstract')} ? 'is-invalid' : ''"
-                                          placeholder="Enter a brief summary of the session topics..."></textarea>
+                                            class="form-control" 
+                                            rows="4" 
+                                            th:classappend="${#fields.hasErrors('proposalAbstract')} ? 'is-invalid' : ''"
+                                            placeholder="Enter a brief summary (leave blank for breaks or ceremonies)..."></textarea>
+    
                                 <div class="invalid-feedback" th:if="${#fields.hasErrors('proposalAbstract')}" th:errors="*{proposalAbstract}">
                                     Abstract Error
                                 </div>
@@ -111,21 +113,24 @@
                             </div>
 
                             <div class="col-md-6">
-                                <label class="form-label fw-bold">Assigned Room <span class="text-danger">*</span></label>
-                                <div class="input-group has-validation">
-                                    <span class="input-group-text bg-light"><i class="bi bi-door-open"></i></span>
-                                    <select th:field="*{room}" 
-                                            class="form-select"
-                                            th:classappend="${#fields.hasErrors('room')} ? 'is-invalid' : ''">
-                                        <option value="">-- Select Room --</option>
-                                        <option th:each="r : ${rooms}" 
-                                                th:value="${r.roomId}" 
-                                                th:text="${r.name} + ' (Cap: ' + ${r.capacity} + ')'"></option>
-                                    </select>
-                                    <div class="invalid-feedback" th:if="${#fields.hasErrors('room')}" th:errors="*{room}">
-                                        Room Error
+                                <label class="form-label fw-bold">Assigned Room (Optional)</label> 
+                                    <div class="input-group has-validation">
+                                        <span class="input-group-text bg-light"><i class="bi bi-door-open"></i></span>
+                                        <select th:field="*{room}" 
+                                                class="form-select"
+                                                th:classappend="${#fields.hasErrors('room')} ? 'is-invalid' : ''">
+            
+                                                <option value="">-- No Room Assigned --</option>
+            
+                                                <option th:each="r : ${rooms}" 
+                                                        th:value="${r.roomId}" 
+                                                        th:text="${r.name} + ' (Cap: ' + ${r.capacity} + ')'"></option>
+                                        </select>
+        
+                                        <div class="invalid-feedback" th:if="${#fields.hasErrors('room')}" th:errors="*{room}">
+                                            Room Error
+                                        </div>
                                     </div>
-                                </div>
                             </div>
 
                             <div class="col-md-6">

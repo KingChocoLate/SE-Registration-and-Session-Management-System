@@ -5,7 +5,7 @@ import jakarta.validation.constraints.*;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "registration", uniqueConstraints = {
+@Table(name = "registrations", uniqueConstraints = {
     @UniqueConstraint(columnNames = {"user_id", "session_id"})
 })
 public class Registration {

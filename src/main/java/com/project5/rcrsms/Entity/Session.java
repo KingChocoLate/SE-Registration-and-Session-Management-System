@@ -18,7 +18,6 @@ public class Session {
     @Size(min = 3, max = 200, message = "Title must be between 3 and 200 characters")
     private String title;
 
-    @NotBlank(message = "Proposal Abstract is required") // Added Validation
     @Column(name = "proposal_abstract", columnDefinition = "TEXT")
     private String proposalAbstract;
 
@@ -35,7 +34,7 @@ public class Session {
     private LocalDateTime sessionTime;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "chair_id")
+    @JoinColumn(name = "chair_id", nullable = true)
     private UserEntity chair;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -44,8 +43,7 @@ public class Session {
     private Conference conference;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "room_id", nullable = false)
-    @NotNull(message = "Room is required") // Added Validation
+    @JoinColumn(name = "room_id", nullable = true)
     private Room room;
 
     @OneToMany(mappedBy = "session", cascade = CascadeType.ALL, orphanRemoval = true)
