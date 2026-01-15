@@ -26,6 +26,10 @@ public class Registration {
 
     private LocalDateTime registrationDate = LocalDateTime.now();
 
+    // --- NEW FIELD: ATTENDANCE ---
+    @Column(nullable = false)
+    private boolean attended = false;
+
     public Registration() {}
 
     // Getters and Setters
@@ -40,4 +44,8 @@ public class Registration {
 
     public LocalDateTime getRegistrationDate() { return registrationDate; }
     public void setRegistrationDate(LocalDateTime registrationDate) { this.registrationDate = registrationDate; }
+
+    // --- NEW GETTERS/SETTERS ---
+    public boolean isAttended() { return attended; }
+    public void setAttended(boolean attended) { this.attended = attended; }
 }
