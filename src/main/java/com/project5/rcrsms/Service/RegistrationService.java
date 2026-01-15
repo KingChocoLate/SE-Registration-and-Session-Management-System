@@ -106,4 +106,6 @@ public class RegistrationService {
         }
         registrationRepo.deleteById(registrationId);
     }
+
+    
 }

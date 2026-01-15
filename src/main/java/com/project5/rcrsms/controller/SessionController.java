@@ -135,4 +135,12 @@ public class SessionController {
 
         model.addAttribute("chairs", potentialChairs);
     }
+
+    @GetMapping("/view/{id}")
+    public String viewSession(@PathVariable Long id, Model model) {
+        Session session = sessionService.getSessionById(id)
+            .orElseThrow(() -> new IllegalArgumentException("Invalid session Id:" + id));
+                model.addAttribute("currentSession", session);
+        return "session/view";
+    }
 }

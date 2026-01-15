@@ -36,8 +36,26 @@
 
                         <div class="mb-4">
                             <label for="password" class="form-label fw-bold small text-uppercase text-muted">Password</label>
-                            <input type="password" class="form-control form-control-lg bg-light" id="password" name="password" required>
+                            <div class="input-group">
+                                <input type="password" class="form-control form-control-lg bg-light border-end-0" id="password" name="password" required>
+                                <button class="btn btn-light border border-start-0" type="button" onclick="togglePassword('password', this)">
+                                    <i class="bi bi-eye"></i>
+                                </button>
+                            </div>
                         </div>
+                        <script>
+                            function togglePassword(inputId, btn) {
+                                const input = document.getElementById(inputId);
+                                const icon = btn.querySelector('i');
+                                if (input.type === "password") {
+                                    input.type = "text";
+                                    icon.classList.replace('bi-eye', 'bi-eye-slash');
+                                } else {
+                                    input.type = "password";
+                                    icon.classList.replace('bi-eye-slash', 'bi-eye');
+                                }
+                            }
+                        </script>
 
                         <div class="d-grid mb-3">
                             <button type="submit" class="btn btn-primary btn-lg fw-bold">Sign In</button>
@@ -55,3 +73,17 @@
 </div>
 </body>
 </html>
+
+<script>
+    function togglePassword(inputId, btn) {
+        const input = document.getElementById(inputId);
+        const icon = btn.querySelector('i');
+        if (input.type === "password") {
+            input.type = "text";
+            icon.classList.replace('bi-eye', 'bi-eye-slash');
+        } else {
+            input.type = "password";
+            icon.classList.replace('bi-eye-slash', 'bi-eye');
+        }
+    }
+</script>

@@ -40,18 +40,33 @@
 
                         <div class="mb-3">
                             <label for="password" class="form-label fw-bold small text-uppercase text-muted">Password</label>
-                            <input type="password" 
-                                   class="form-control bg-light" 
-                                   th:classappend="${#fields.hasErrors('password')} ? 'is-invalid' : ''"
-                                   id="password" 
-                                   th:field="*{password}" 
-                                   required>
-                            <div class="invalid-feedback" 
-                                 th:if="${#fields.hasErrors('password')}" 
-                                 th:errors="*{password}">
+                            <div class="input-group">
+                                <input type="password" 
+                                    class="form-control bg-light border-end-0" 
+                                    th:classappend="${#fields.hasErrors('password')} ? 'is-invalid' : ''"
+                                    id="password" 
+                                    th:field="*{password}" 
+                                    required>
+                                <button class="btn btn-light border border-start-0" type="button" onclick="togglePassword('password', this)">
+                                    <i class="bi bi-eye"></i>
+                                </button>
+                                <div class="invalid-feedback" th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></div>
                             </div>
                             <div class="form-text" th:unless="${#fields.hasErrors('password')}">Must be at least 8 characters long.</div>
                         </div>
+                        <script>
+                            function togglePassword(inputId, btn) {
+                                const input = document.getElementById(inputId);
+                                const icon = btn.querySelector('i');
+                                if (input.type === "password") {
+                                    input.type = "text";
+                                    icon.classList.replace('bi-eye', 'bi-eye-slash');
+                                } else {
+                                    input.type = "password";
+                                    icon.classList.replace('bi-eye-slash', 'bi-eye');
+                                }
+                            }
+                        </script>
 
                         <div class="mb-4">
                             <label for="role" class="form-label fw-bold small text-uppercase text-muted">I am a...</label>
@@ -81,3 +96,4 @@
 </div>
 </body>
 </html>
+

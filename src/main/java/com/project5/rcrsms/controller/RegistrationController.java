@@ -91,4 +91,20 @@ public class RegistrationController {
         String referer = request.getHeader("Referer");
         return "redirect:" + (referer != null ? referer : "/");
     }
+    
+    // --- 3. CANCEL REGISTRATION (For Participants) ---
+    @PreAuthorize("isAuthenticated()")
+    @PostMapping("/cancel/{regId}")
+    public String cancelRegistration(@PathVariable Long regId, 
+                                     Principal principal, 
+                                     RedirectAttributes ra) {
+        try {
+            // This calls your service to ensure only the owner can cancel
+            registrationService.cancelRegistration(principal.getName(), regId);
+            ra.addFlashAttribute("successMessage", "You have successfully unregistered from the session.");
+        } catch (RuntimeException e) {
+            ra.addFlashAttribute("errorMessage", e.getMessage());
+        }
+        return "redirect:/registrations/my-schedule";
+    }
 }
