@@ -1,7 +1,7 @@
 package com.project5.rcrsms.Entity;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.*; // Import for Validation
+import jakarta.validation.constraints.*; 
 
 @Entity
 @Table(name = "rooms")
@@ -11,17 +11,17 @@ public class Room {
     @Column(name = "room_id")
     private Long roomId;
 
-    @NotBlank(message = "Room name is required") // Added Validation
+    @NotBlank(message = "Room name is required") 
     @Column(nullable = false)
     private String name;
 
-    @NotNull(message = "Capacity is required") // Added Validation
+    @NotNull(message = "Capacity is required") 
     @Min(value = 1, message = "Capacity must be at least 1")
     @Max(value = 1000, message = "Capacity cannot exceed 1000")
     @Column(nullable = false)
     private Integer capacity;
 
-    @NotBlank(message = "Location is required") // Added Validation
+    @NotBlank(message = "Location is required") 
     @Column(nullable = false)
     private String location; 
 

@@ -3,7 +3,7 @@ CREATE TABLE sessions (
     title VARCHAR(255) NOT NULL,
     session_time DATETIME NOT NULL,
     proposal_abstract TEXT,
-    status ENUM('PENDING', 'APPROVED', 'REJECTED', 'SCHEDULED') NOT NULL,
+    status ENUM('PENDING', 'APPROVED', 'REJECTED') NOT NULL,
     conference_id BIGINT NOT NULL,
     chair_id BIGINT NULL,
     FOREIGN KEY (conference_id) REFERENCES conferences(conference_id),

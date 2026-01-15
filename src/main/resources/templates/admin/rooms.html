@@ -32,21 +32,33 @@
                         <div class="mb-3">
                             <label class="form-label fw-bold text-uppercase small text-muted">Room Name</label>
                             <input type="text" class="form-control" th:field="*{name}" 
+                                   th:classappend="${#fields.hasErrors('name')} ? 'is-invalid' : ''"
                                    placeholder="e.g. Conference Hall A" required>
+                            <div class="invalid-feedback" th:if="${#fields.hasErrors('name')}" th:errors="*{name}">Name Error</div>
                         </div>
 
                         <div class="mb-3">
                             <label class="form-label fw-bold text-uppercase small text-muted">Location</label>
                             <input type="text" class="form-control" th:field="*{location}" 
+                                   th:classappend="${#fields.hasErrors('location')} ? 'is-invalid' : ''"
                                    placeholder="e.g. Building 1, Floor 2" required>
+                             <div class="invalid-feedback" th:if="${#fields.hasErrors('location')}" th:errors="*{location}">Location Error</div>
                         </div>
 
                         <div class="mb-4">
                             <label class="form-label fw-bold text-uppercase small text-muted">Capacity</label>
-                            <div class="input-group">
+                            <div class="input-group has-validation">
                                 <span class="input-group-text"><i class="bi bi-people"></i></span>
                                 <input type="number" class="form-control" th:field="*{capacity}" 
+                                       th:classappend="${#fields.hasErrors('capacity')} ? 'is-invalid' : ''"
                                        placeholder="e.g. 50" min="1" required>
+                                
+                                <div class="invalid-feedback" th:if="${#fields.hasErrors('capacity')}" th:errors="*{capacity}">
+                                    Capacity Error
+                                </div>
+                            </div>
+                            <div class="form-text text-muted small" th:unless="${#fields.hasErrors('capacity')}">
+                                Maximum capacity is 1000 seats.
                             </div>
                         </div>
 

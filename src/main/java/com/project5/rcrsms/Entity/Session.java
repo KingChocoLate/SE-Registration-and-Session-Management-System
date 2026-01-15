@@ -1,7 +1,8 @@
 package com.project5.rcrsms.Entity;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.*; // Import for Validation
+import jakarta.validation.constraints.*;
+import org.springframework.format.annotation.DateTimeFormat; // Import this
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -22,14 +23,15 @@ public class Session {
     private String proposalAbstract;
 
     public enum SessionStatus {
-        PENDING, APPROVED, REJECTED, SCHEDULED
+        PENDING, APPROVED, REJECTED
     }
 
     @Enumerated(EnumType.STRING)
     private SessionStatus status;
 
     @NotNull(message = "Session time is required")
-    @Future(message = "Session time must be in the future") // Added Validation
+    @Future(message = "Session time must be in the future")
+    @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm") // Crucial for HTML input
     @Column(name = "session_time")
     private LocalDateTime sessionTime;
 
@@ -51,7 +53,7 @@ public class Session {
 
     public Session() {}
 
-    // --- Getters and Setters ---
+    // Getters and Setters
     public Long getSessionId() { return sessionId; }
     public void setSessionId(Long sessionId) { this.sessionId = sessionId; }
 

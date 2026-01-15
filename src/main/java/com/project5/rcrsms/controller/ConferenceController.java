@@ -1,15 +1,14 @@
 package com.project5.rcrsms.controller;
 
 import com.project5.rcrsms.Entity.Conference;
-
-import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import com.project5.rcrsms.Service.ConferenceService;
 import com.project5.rcrsms.Service.SessionService;
+
+import java.util.List;
 
 @Controller
 @RequestMapping("/conferences")
@@ -20,12 +19,13 @@ public class ConferenceController {
     @Autowired
     private SessionService sessionService;
 
-    // 1. List All Conferences
+    // 1. List All Conferences (With Filters)
     @GetMapping("") 
     public String listConferences(
             @RequestParam(name = "filter", defaultValue = "upcoming") String filter,
             Model model) {
 
+        // This requires the new Service method below
         List<Conference> conferences = conferenceService.getConferencesByFilter(filter);
 
         model.addAttribute("conferences", conferences);
@@ -53,15 +53,17 @@ public class ConferenceController {
         } 
     }
     
-    // 4. NEW: View Conference Details (Fixes view.html)
+    // 4. View Conference Details
     @GetMapping("/{id}")
     public String viewConference(@PathVariable Long id, Model model) {
         Conference conference = conferenceService.getConferenceById(id)
             .orElseThrow(() -> new IllegalArgumentException("Invalid conference Id:" + id));
             
         model.addAttribute("conference", conference);
-        // Load sessions for this conference to display in the view
-        model.addAttribute("sessions", sessionService.getSessionsByConferenceId(id));
+        
+        // --- CRITICAL FIX: Load ONLY Approved sessions ---
+        // This hides the "Pending" proposals from the public view
+        model.addAttribute("sessions", sessionService.getApprovedSessionsByConferenceId(id));
         
         return "conference/view";
     }

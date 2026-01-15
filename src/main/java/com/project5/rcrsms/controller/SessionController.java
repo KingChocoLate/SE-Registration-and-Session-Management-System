@@ -1,10 +1,12 @@
 package com.project5.rcrsms.controller;
 
 import com.project5.rcrsms.Entity.Session;
+import com.project5.rcrsms.Entity.Session.SessionStatus;
 import com.project5.rcrsms.Entity.UserEntity;
 import com.project5.rcrsms.Repository.ConferenceRepository;
 import com.project5.rcrsms.Repository.UserRepository;
 import com.project5.rcrsms.Repository.RoomRepository;
+import com.project5.rcrsms.Repository.SessionRepository; // Added Repository Import
 import com.project5.rcrsms.Service.SessionService;
 
 import jakarta.validation.Valid;
@@ -16,27 +18,34 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
-
 
 @Controller
 @RequestMapping("/sessions")
 public class SessionController {
 
     @Autowired private SessionService sessionService;
+    @Autowired private SessionRepository sessionRepository; 
     @Autowired private ConferenceRepository conferenceRepo;
     @Autowired private UserRepository userRepo;
     @Autowired private RoomRepository roomRepo;
 
     @GetMapping({"", "/", "/list"}) 
     public String listSessions(Model model) {
-        model.addAttribute("sessions", sessionService.getAllSessions());
+        // FIX: Fetch only APPROVED sessions that are in the FUTURE
+        List<Session> sessions = sessionRepository.findByStatusAndSessionTimeGreaterThanEqualOrderBySessionTimeAsc(
+            SessionStatus.APPROVED, 
+            LocalDateTime.now()
+        );
+        model.addAttribute("sessions", sessions);
         return "session/list";
     }
 
-    @PreAuthorize("hasRole('ADMIN')") 
+    // --- UPDATED: Allow BOTH Admin and Chair to create ---
+    @PreAuthorize("hasAnyRole('ADMIN', 'CHAIR')") 
     @GetMapping("/create")
     public String showCreateForm(Model model) {
         model.addAttribute("session", new Session());
@@ -55,37 +64,51 @@ public class SessionController {
         return "session/create";
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'CHAIR')")
     @PostMapping("/save")
     public String saveSession(@Valid @ModelAttribute("session") Session session, 
                               BindingResult result, 
-                              Model model) { 
+                              Model model,
+                              Principal principal) {
         
-        // 1. CHECK FOR VALIDATION ERRORS
         if (result.hasErrors()) {
             setupFormModels(model); 
             return "session/create"; 
         }
 
-        // 2. SET DEFAULTS
-        if (session.getSessionTime() == null) {
-            session.setSessionTime(LocalDateTime.now());
+        UserEntity currentUser = userRepo.findByUsername(principal.getName())
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        boolean isChair = currentUser.getRole().name().equals("CHAIR");
+
+        if (isChair) {
+            if (session.getSessionId() == null) {
+                session.setStatus(SessionStatus.PENDING);
+                session.setChair(currentUser);
+            }
+        } else {
+            if (session.getStatus() == null) {
+                session.setStatus(SessionStatus.APPROVED);
+            }
         }
-        if (session.getStatus() == null) {
-            session.setStatus(com.project5.rcrsms.Entity.Session.SessionStatus.APPROVED); 
+
+        if (session.getSessionTime() == null) {
+            session.setSessionTime(LocalDateTime.now().plusDays(1));
         }
 
         try {
-            // 3. SAVE LOGIC
             if (session.getSessionId() != null) {
                 sessionService.updateSession(session.getSessionId(), session);
             } else {
                 sessionService.createSession(session);
             }
-            return "redirect:/admin/schedule";
+            
+            if (isChair) {
+                return "redirect:/chair/dashboard?success=Proposal Submitted";
+            } else {
+                return "redirect:/admin/schedule?success=Session Saved";
+            }
 
         } catch (RuntimeException e) {
-            // Catch other database errors (like duplicates)
             model.addAttribute("errorMessage", e.getMessage());
             setupFormModels(model);
             return "session/create";
@@ -106,7 +129,6 @@ public class SessionController {
         List<UserEntity> potentialChairs = userRepo.findAll().stream()
             .filter(u -> {
                 var role = u.getRole();
-                // CORRECTED: Check for "CHAIR" and "ADMIN" (matching your database)
                 return role != null && (role.name().equals("CHAIR"));
             })
             .collect(Collectors.toList());

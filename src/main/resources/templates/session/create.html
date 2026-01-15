@@ -20,9 +20,15 @@
                     </h2>
                     <p class="text-muted">Fill in the details below to configure the conference session.</p>
                 </div>
-                <a th:href="@{/admin/schedule}" class="btn btn-outline-secondary">
-                    <i class="bi bi-arrow-left me-1"></i> Back to Schedule
-                </a>
+                
+                <div class="btn-group">
+                    <a sec:authorize="hasRole('ADMIN')" th:href="@{/admin/schedule}" class="btn btn-outline-secondary">
+                        <i class="bi bi-arrow-left me-1"></i> Back to Schedule
+                    </a>
+                    <a sec:authorize="hasRole('CHAIR')" th:href="@{/chair/dashboard}" class="btn btn-outline-secondary">
+                        <i class="bi bi-arrow-left me-1"></i> Back to Dashboard
+                    </a>
+                </div>
             </div>
 
             <div class="card shadow-lg border-0 rounded-3">
@@ -54,7 +60,7 @@
                                 </div>
                             </div>
 
-                            <div class="col-md-4">
+                            <div class="col-md-4" sec:authorize="hasRole('ADMIN')">
                                 <label class="form-label fw-bold">Status</label>
                                 <select th:field="*{status}" class="form-select form-select-lg">
                                     <option th:each="st : ${T(com.project5.rcrsms.Entity.Session.SessionStatus).values()}" 
@@ -62,16 +68,16 @@
                                             th:text="${st}"></option>
                                 </select>
                             </div>
+                            
+                            <input type="hidden" th:field="*{status}" sec:authorize="!hasRole('ADMIN')" />
 
                             <div class="col-12">
                                 <label class="form-label fw-bold">Abstract / Description (Optional)</label>
-    
                                 <textarea th:field="*{proposalAbstract}" 
                                             class="form-control" 
                                             rows="4" 
                                             th:classappend="${#fields.hasErrors('proposalAbstract')} ? 'is-invalid' : ''"
                                             placeholder="Enter a brief summary (leave blank for breaks or ceremonies)..."></textarea>
-    
                                 <div class="invalid-feedback" th:if="${#fields.hasErrors('proposalAbstract')}" th:errors="*{proposalAbstract}">
                                     Abstract Error
                                 </div>
@@ -105,7 +111,8 @@
                                     <span class="input-group-text bg-light"><i class="bi bi-calendar-event"></i></span>
                                     <input type="datetime-local" th:field="*{sessionTime}" 
                                            class="form-control"
-                                           th:classappend="${#fields.hasErrors('sessionTime')} ? 'is-invalid' : ''">
+                                           th:classappend="${#fields.hasErrors('sessionTime')} ? 'is-invalid' : ''"
+                                           th:value="${session.sessionTime != null ? #temporals.format(session.sessionTime, 'yyyy-MM-dd''T''HH:mm') : ''}">
                                     <div class="invalid-feedback" th:if="${#fields.hasErrors('sessionTime')}" th:errors="*{sessionTime}">
                                         Time Error
                                     </div>
@@ -119,21 +126,18 @@
                                         <select th:field="*{room}" 
                                                 class="form-select"
                                                 th:classappend="${#fields.hasErrors('room')} ? 'is-invalid' : ''">
-            
                                                 <option value="">-- No Room Assigned --</option>
-            
                                                 <option th:each="r : ${rooms}" 
                                                         th:value="${r.roomId}" 
                                                         th:text="${r.name} + ' (Cap: ' + ${r.capacity} + ')'"></option>
                                         </select>
-        
                                         <div class="invalid-feedback" th:if="${#fields.hasErrors('room')}" th:errors="*{room}">
                                             Room Error
                                         </div>
                                     </div>
                             </div>
 
-                            <div class="col-md-6">
+                            <div class="col-md-6" sec:authorize="hasRole('ADMIN')">
                                 <label class="form-label fw-bold text-success">Assign Session Chair</label>
                                 <div class="input-group">
                                     <span class="input-group-text bg-success text-white"><i class="bi bi-person-badge"></i></span>
@@ -146,10 +150,13 @@
                                 </div>
                                 <div class="form-text">Only users with 'CHAIR' roles appear here.</div>
                             </div>
-                        </div>
+                            
+                            </div>
 
                         <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-5 pt-3 border-top">
-                            <a th:href="@{/admin/schedule}" class="btn btn-light btn-lg px-4 text-muted">Cancel</a>
+                            <a sec:authorize="hasRole('ADMIN')" th:href="@{/admin/schedule}" class="btn btn-light btn-lg px-4 text-muted">Cancel</a>
+                            <a sec:authorize="hasRole('CHAIR')" th:href="@{/chair/dashboard}" class="btn btn-light btn-lg px-4 text-muted">Cancel</a>
+                            
                             <button type="submit" class="btn btn-primary btn-lg px-5 fw-bold shadow-sm">
                                 <i class="bi bi-check-circle-fill me-2"></i>Save Session
                             </button>

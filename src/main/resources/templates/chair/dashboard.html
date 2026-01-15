@@ -16,10 +16,11 @@
             </h2>
             <p class="text-muted">Welcome back, <span th:text="${currentUser.username}" class="fw-bold text-dark">User</span>.</p>
         </div>
-        <div class="text-end">
-            <span class="badge bg-success bg-opacity-10 text-success px-3 py-2 rounded-pill">
-                <i class="bi bi-check-circle me-1"></i> Role: Session Chair
-            </span>
+        
+        <div>
+            <a th:href="@{/sessions/create}" class="btn btn-success btn-lg shadow-sm fw-bold">
+                <i class="bi bi-plus-lg me-2"></i>Propose New Session
+            </a>
         </div>
     </div>
 
@@ -38,7 +39,10 @@
                     <i class="bi bi-info-circle fs-1 text-primary me-3 opacity-50"></i>
                     <div>
                         <h5 class="fw-bold">Your Responsibilities</h5>
-                        <p class="text-muted mb-0 small">As a Chair, please ensure all sessions start on time. Review the abstracts below and verify speaker attendance.</p>
+                        <p class="text-muted mb-0 small">
+                            As a Chair, please ensure all sessions start on time. 
+                            Proposals you submit will be marked as <strong>Pending</strong> until an Admin approves them.
+                        </p>
                     </div>
                 </div>
             </div>
@@ -72,14 +76,25 @@
                         </td>
                         <td>
                             <span class="badge bg-light text-dark border">
-                                <i class="bi bi-door-open me-1"></i><span th:text="${s.room.name}">Room</span>
+                                <i class="bi bi-door-open me-1"></i><span th:text="${s.room != null ? s.room.name : 'TBD'}">Room</span>
                             </span>
                         </td>
+                        
                         <td>
-                             <span th:if="${s.status.name() == 'APPROVED'}" class="badge bg-success bg-opacity-10 text-success rounded-pill">Approved</span>
-                             <span th:if="${s.status.name() == 'PENDING'}" class="badge bg-warning bg-opacity-10 text-warning rounded-pill">Pending</span>
-                             <span th:if="${s.status.name() == 'REJECTED'}" class="badge bg-danger bg-opacity-10 text-danger rounded-pill">Rejected</span>
+                            <span th:if="${s.status != null && s.status.name() == 'APPROVED'}" 
+                                  class="badge bg-success bg-opacity-10 text-success rounded-pill px-3">
+                                  <i class="bi bi-check-circle-fill me-1"></i> Approved
+                            </span>
+                            <span th:if="${s.status != null && s.status.name() == 'PENDING'}" 
+                                  class="badge bg-warning bg-opacity-10 text-warning rounded-pill px-3">
+                                  <i class="bi bi-hourglass-split me-1"></i> Pending
+                            </span>
+                            <span th:if="${s.status != null && s.status.name() == 'REJECTED'}" 
+                                  class="badge bg-danger bg-opacity-10 text-danger rounded-pill px-3">
+                                  <i class="bi bi-x-circle-fill me-1"></i> Rejected
+                            </span>
                         </td>
+
                         <td class="text-end pe-4">
                             <button type="button" 
                                     class="btn btn-sm btn-outline-primary" 
@@ -87,6 +102,13 @@
                                     th:data-bs-target="'#modal-' + ${s.sessionId}">
                                 <i class="bi bi-people me-1"></i>Participants
                             </button>
+                        </td>
+                    </tr>
+                    
+                    <tr th:if="${#lists.isEmpty(mySessions)}">
+                        <td colspan="5" class="text-center py-5 text-muted">
+                            <i class="bi bi-calendar-x fs-1 opacity-25"></i>
+                            <p class="mt-2">You have no assigned sessions.</p>
                         </td>
                     </tr>
                 </tbody>
@@ -99,49 +121,32 @@
             <div class="modal-dialog modal-dialog-centered modal-lg">
                 <div class="modal-content border-0 shadow">
                     <div class="modal-header bg-light">
-                        <h5 class="modal-title fw-bold text-primary">
-                            <i class="bi bi-people-fill me-2"></i>Manage Participants
-                        </h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        <h5 class="modal-title fw-bold text-primary">Manage Participants</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                     </div>
                     <div class="modal-body p-4">
-                        <h4 class="mb-3" th:text="${s.title}">Session Title</h4>
-                        <p class="text-muted small mb-4" th:text="${s.proposalAbstract}">Abstract...</p>
+                        <h4 th:text="${s.title}">Session Title</h4>
+                        <p class="text-muted small mb-3">List of users registered for this session.</p>
                         
-                        <h6 class="fw-bold text-success text-uppercase small mb-3">Registered Users</h6>
-
-                        <div th:if="${s.registrations.empty}" class="alert alert-light border text-center small text-muted">
-                            <i class="bi bi-person-x fs-5 d-block mb-1"></i>
-                            No participants have registered yet.
+                        <div th:if="${s.registrations.empty}" class="alert alert-info">
+                            No participants registered yet.
                         </div>
 
-                        <div th:unless="${s.registrations.empty}" class="table-responsive border rounded">
+                        <div th:unless="${s.registrations.empty}" class="table-responsive border rounded mt-3">
                             <table class="table table-sm table-striped mb-0">
-                                <thead class="table-light">
-                                    <tr>
-                                        <th class="ps-3">Username</th>
-                                        <th class="text-end pe-3">Action</th>
-                                    </tr>
-                                </thead>
                                 <tbody>
                                     <tr th:each="reg : ${s.registrations}">
                                         <td class="ps-3 fw-bold" th:text="${reg.user.username}">User</td>
                                         <td class="text-end pe-3">
-                                            <form th:action="@{'/registrations/remove/' + ${reg.registrationId}}" method="post" class="d-inline">
-                                                <button type="submit" class="btn btn-xs btn-outline-danger border-0" 
-                                                        onclick="return confirm('Remove this user from the session?');">
-                                                    <i class="bi bi-trash"></i> Remove
-                                                </button>
+                                            <form th:action="@{'/registrations/remove/' + ${reg.registrationId}}" method="post">
+                                                <button type="submit" class="btn btn-xs btn-outline-danger border-0"
+                                                        onclick="return confirm('Remove user?');">Remove</button>
                                             </form>
                                         </td>
                                     </tr>
                                 </tbody>
                             </table>
                         </div>
-
-                    </div>
-                    <div class="modal-footer bg-light border-0">
-                        <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Close</button>
                     </div>
                 </div>
             </div>

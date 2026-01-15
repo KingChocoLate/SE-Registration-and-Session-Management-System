@@ -3,9 +3,9 @@ package com.project5.rcrsms.controller;
 import com.project5.rcrsms.Entity.Session;
 import com.project5.rcrsms.Entity.Session.SessionStatus;
 import com.project5.rcrsms.Repository.ConferenceRepository;
+import com.project5.rcrsms.Repository.RoomRepository;
 import com.project5.rcrsms.Repository.SessionRepository;
 import com.project5.rcrsms.Repository.UserRepository;
-import com.project5.rcrsms.Service.SessionService; // Import Service
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping("/admin")
@@ -21,41 +22,59 @@ import java.util.List;
 public class AdminController {
 
     @Autowired private SessionRepository sessionRepo;
-    @Autowired private SessionService sessionService; 
     @Autowired private ConferenceRepository conferenceRepo;
+    @Autowired private RoomRepository roomRepo;
     @Autowired private UserRepository userRepo;
 
     // --- 1. DASHBOARD ---
     @GetMapping("/dashboard")
     public String dashboard(Model model) {
-        model.addAttribute("totalSessions", sessionRepo.count());
-        model.addAttribute("totalConferences", conferenceRepo.count());
-        model.addAttribute("totalUsers", userRepo.count());
+        List<Session> allSessions = sessionRepo.findAll();
+
+        long totalSessions = allSessions.size();
+        long totalConferences = conferenceRepo.count();
+        long totalUsers = userRepo.count();
         
-        // Count upcoming sessions properly
-        long upcomingCount = sessionRepo.findAll().stream()
-                .filter(s -> s.getSessionTime().isAfter(java.time.LocalDateTime.now()))
+        long pendingCount = allSessions.stream()
+                .filter(s -> s.getStatus() == SessionStatus.PENDING)
                 .count();
-                
+
+        long upcomingCount = allSessions.stream()
+                .filter(s -> s.getSessionTime() != null && 
+                             s.getSessionTime().isAfter(java.time.LocalDateTime.now()))
+                .count();
+
+        model.addAttribute("totalSessions", totalSessions);
+        model.addAttribute("totalConferences", totalConferences);
+        model.addAttribute("totalUsers", totalUsers);
+        model.addAttribute("pendingCount", pendingCount);
         model.addAttribute("upcomingSessions", upcomingCount); 
-        model.addAttribute("recentSessions", sessionRepo.findAll());
+        
+        List<Session> recentSessions = allSessions.stream()
+            .sorted((s1, s2) -> s2.getSessionId().compareTo(s1.getSessionId()))
+            .limit(10)
+            .collect(Collectors.toList());
+
+        model.addAttribute("recentSessions", recentSessions);
         return "admin/dashboard";
     }
 
-    // --- 2. MANAGE SCHEDULE 
+    // --- 2. MANAGE SCHEDULE (FIXED SEARCH LOGIC) ---
     @GetMapping("/schedule")
-    public String schedule(Model model, @RequestParam(value = "keyword", required = false) String keyword) {
+    public String schedule(Model model, @RequestParam(name = "keyword", required = false) String keyword) {
         List<Session> sessions;
 
-        // Check if keyword is provided and not empty
-        if (keyword != null && !keyword.isEmpty()) {
-            sessions = sessionService.searchSessionsByTitle(keyword);
+        // Check if keyword is present
+        if (keyword != null && !keyword.trim().isEmpty()) {
+            // Use the Search method you added to Repository
+            sessions = sessionRepo.findByTitleContainingIgnoreCase(keyword);
         } else {
-            sessions = sessionService.getAllSessions();
+            // Otherwise show all
+            sessions = sessionRepo.findAll();
         }
-        
+
         model.addAttribute("sessions", sessions);
-        model.addAttribute("keyword", keyword); 
+        model.addAttribute("keyword", keyword); // Pass keyword back so input stays filled
         return "admin/schedule"; 
     }
 
@@ -66,9 +85,8 @@ public class AdminController {
         return "admin/users";
     }
 
-    // Delete User Logic
     @GetMapping("/users/delete/{id}")
-    public String deleteUser(@PathVariable("id") Long id, RedirectAttributes ra) {
+    public String deleteUser(@PathVariable Long id, RedirectAttributes ra) {
         if (userRepo.existsById(id)) {
             userRepo.deleteById(id);
             ra.addFlashAttribute("successMessage", "User deleted successfully.");

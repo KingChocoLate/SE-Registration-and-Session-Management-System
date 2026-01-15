@@ -16,6 +16,7 @@
             </h2>
             <p class="text-muted mb-0">Manage conference dates, assign chairs, and track status.</p>
         </div>
+        
         <a th:href="@{/sessions/create}" class="btn btn-primary btn-lg shadow-sm fw-bold">
             <i class="bi bi-plus-lg me-2"></i>New Session
         </a>
@@ -24,21 +25,14 @@
     <div class="card border-0 shadow-sm mb-4">
         <div class="card-body bg-light rounded-3 p-4">
             <form class="row g-3" th:action="@{/admin/schedule}" method="get">
-                <div class="col-md-5">
+                <div class="col-md-9">
                     <div class="input-group">
                         <span class="input-group-text bg-white border-end-0"><i class="bi bi-search"></i></span>
                         <input type="text" name="keyword" th:value="${keyword}" class="form-control border-start-0" placeholder="Search by session title...">
                     </div>
                 </div>
-                <div class="col-md-4">
-                    <select class="form-select" disabled>
-                        <option selected>All Conferences</option>
-                        <option>Tech Summit 2026</option>
-                        <option>AI Symposium</option>
-                    </select>
-                </div>
                 <div class="col-md-3">
-                    <button type="button" class="btn btn-outline-dark w-100 fw-bold">Apply Filters</button>
+                    <button type="submit" class="btn btn-outline-dark w-100 fw-bold">Search</button>
                 </div>
             </form>
             
@@ -86,7 +80,7 @@
 
                         <td>
                             <div th:if="${s.chair != null}" class="d-flex align-items-center">
-                                <div class="avatar-circle bg-success text-white small rounded-circle d-flex align-items-center justify-content-center me-2 w-[32px] h-[32px]">
+                                <div class="avatar-circle bg-success text-white small rounded-circle d-flex align-items-center justify-content-center me-2" style="width: 32px; height: 32px;">
                                     <i class="bi bi-person-fill"></i>
                                 </div>
                                 <span class="fw-semibold text-dark" th:text="${s.chair.username}">Name</span>
@@ -103,7 +97,7 @@
                         </td>
 
                         <td class="text-end pe-4">
-                            <a th:href="@{'/sessions/edit/' + ${s.sessionId}}" class="btn btn-sm btn-light text-primary me-1" title="Edit">
+                            <a th:href="@{'/sessions/edit/' + ${s.sessionId}}" class="btn btn-sm btn-light text-primary me-1" title="Edit/Approve">
                                 <i class="bi bi-pencil-fill"></i>
                             </a>
                             <a th:href="@{'/sessions/delete/' + ${s.sessionId}}" 
@@ -114,28 +108,13 @@
                             </a>
                         </td>
                     </tr>
-
-                    <tr th:if="${#lists.isEmpty(sessions)}">
-                        <td colspan="5" class="text-center py-5">
-                            <div class="py-4">
-                                <i class="bi bi-calendar-plus fs-1 text-muted opacity-25"></i>
-                                <h5 class="mt-3 fw-bold text-muted">No Sessions Scheduled</h5>
-                                <p class="text-muted small mb-4">Get started by creating your first session.</p>
-                                <a th:href="@{/sessions/create}" class="btn btn-outline-primary btn-sm">
-                                    Create Session
-                                </a>
-                            </div>
-                        </td>
-                    </tr>
-
                 </tbody>
             </table>
             
             <div th:if="${#lists.isEmpty(sessions)}" class="text-center py-5">
-                <i class="bi bi-search fs-1 text-muted opacity-25"></i>
+                <i class="bi bi-inbox fs-1 text-muted opacity-25"></i>
                 <h5 class="mt-3 fw-bold text-muted">No sessions found</h5>
-                <p class="text-muted small">Try adjusting your search criteria.</p>
-                <a th:href="@{/admin/schedule}" class="btn btn-sm btn-outline-secondary">Clear Filters</a>
+                <p class="text-muted small">Wait for Chairs to submit proposals or create one yourself.</p>
             </div>
 
         </div>
