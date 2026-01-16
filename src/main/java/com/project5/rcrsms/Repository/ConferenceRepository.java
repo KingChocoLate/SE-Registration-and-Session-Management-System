@@ -19,7 +19,11 @@ public interface ConferenceRepository extends JpaRepository<Conference, Long> {
 
     List<Conference> findByStartDateBetween(LocalDate startDate, LocalDate endDate);
 
-    List<Conference> findByStartDateGreaterThanEqualOrderByStartDateAsc(LocalDate today);
+    List<Conference> findByStartDateAfterOrderByStartDateAsc(LocalDate date);
 
-    List<Conference> findByEndDateLessThanOrderByEndDateDesc(LocalDate today);
+    List<Conference> findByEndDateBeforeOrderByStartDateDesc(LocalDate date);
+
+    List<Conference> findByStartDateBeforeAndEndDateAfterOrderByStartDateAsc(LocalDate start, LocalDate end);
+
+    
 }

@@ -1,129 +1,146 @@
 package com.project5.rcrsms.controller;
 
 import com.project5.rcrsms.Entity.Session;
+import com.project5.rcrsms.Entity.Session.SessionStatus;
+import com.project5.rcrsms.Entity.UserEntity;
 import com.project5.rcrsms.Repository.ConferenceRepository;
 import com.project5.rcrsms.Repository.UserRepository;
 import com.project5.rcrsms.Repository.RoomRepository;
+import com.project5.rcrsms.Repository.SessionRepository; // Added Repository Import
 import com.project5.rcrsms.Service.SessionService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-
-import java.time.LocalDateTime;
-
 
 import jakarta.validation.Valid;
-import org.springframework.validation.BindingResult;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.*;
+
+import java.security.Principal;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping("/sessions")
 public class SessionController {
 
-    @Autowired
-    private SessionService sessionService;
+    @Autowired private SessionService sessionService;
+    @Autowired private SessionRepository sessionRepository; 
+    @Autowired private ConferenceRepository conferenceRepo;
+    @Autowired private UserRepository userRepo;
+    @Autowired private RoomRepository roomRepo;
 
-    @Autowired
-    private ConferenceRepository conferenceRepo;
-
-    @Autowired
-    private UserRepository userRepo;
-
-    // 2. NEW: Inject the RoomRepository
-    @Autowired
-    private RoomRepository roomRepo; 
-    
-    // 1. List all sessions (Public View)
-    @GetMapping("/list")
+    @GetMapping({"", "/", "/list"}) 
     public String listSessions(Model model) {
-        model.addAttribute("sessions", sessionService.getAllSessions());
+        // FIX: Fetch only APPROVED sessions that are in the FUTURE
+        List<Session> sessions = sessionRepository.findByStatusAndSessionTimeGreaterThanEqualOrderBySessionTimeAsc(
+            SessionStatus.APPROVED, 
+            LocalDateTime.now()
+        );
+        model.addAttribute("sessions", sessions);
         return "session/list";
     }
 
-    @GetMapping("/submit")
-    public String showSubmitForm(Model model) {
-        model.addAttribute("session", new Session());
-        return "session/create";
-    }
-    @PostMapping("/submit")
-    // public String handleSubmission(@RequestParam String title,
-    //                                @RequestParam String abstractText) {
-        
-    //     // Simulating a database save (Member 2 will do the real logic later)
-    //     System.out.println("New Session Submitted:");
-    //     System.out.println("Title: " + title);
-    //     System.out.println("Abstract: " + abstractText);
-
-    //     // Redirect back to the list page after success
-    //     return "redirect:/sessions";
-    // }
-    public String handleSubmission(@Valid @ModelAttribute("session") Session session, 
-                               BindingResult result, 
-                               RedirectAttributes ra) {
-        if (result.hasErrors()) {
-            return "session/create"; 
-        }
-        // Save the session to the database
-        sessionService.createSession(session);
-        // 3. Add a success message to show on the sessions list page
-        ra.addFlashAttribute("success", "Session '" + session.getTitle() + "' has been submitted successfully!");
-        return "redirect:/sessions";
-    }
-    
-    // 2. Show Create Form/
+    // --- UPDATED: Allow BOTH Admin and Chair to create ---
+    @PreAuthorize("hasAnyRole('ADMIN', 'CHAIR')") 
     @GetMapping("/create")
     public String showCreateForm(Model model) {
         model.addAttribute("session", new Session());
-        model.addAttribute("conferences", conferenceRepo.findAll());
-        model.addAttribute("chairs", userRepo.findAll());
-        
-        // 3. NEW: Add Rooms to the model so the dropdown works
-        model.addAttribute("rooms", roomRepo.findAll()); 
-        
+        setupFormModels(model); 
         return "session/create";
     }
 
-    // 3. Handle Create/Update Submission
-    @PostMapping("/save")
-    public String saveSession(@ModelAttribute("session") Session session) {
-        if (session.getSessionTime() == null) {
-            session.setSessionTime(LocalDateTime.now());
-        }
-        
-        if (session.getSessionId() != null) {
-            sessionService.updateSession(session.getSessionId(), session);
-        } else {
-            sessionService.createSession(session);
-        }
-        return "redirect:/admin/schedule";
-    }
-
-    // 4. Show Edit Form
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/edit/{id}")
     public String showEditForm(@PathVariable("id") Long id, Model model) {
         Session session = sessionService.getSessionById(id)
             .orElseThrow(() -> new IllegalArgumentException("Invalid session Id:" + id));
         
         model.addAttribute("session", session);
-        model.addAttribute("conferences", conferenceRepo.findAll());
-        model.addAttribute("chairs", userRepo.findAll());
-        
-        // 3. NEW: Add Rooms here too so editing works
-        model.addAttribute("rooms", roomRepo.findAll());
-        
+        setupFormModels(model); 
         return "session/create";
     }
 
-    // 5. Delete Session
+    @PreAuthorize("hasAnyRole('ADMIN', 'CHAIR')")
+    @PostMapping("/save")
+    public String saveSession(@Valid @ModelAttribute("session") Session session, 
+                              BindingResult result, 
+                              Model model,
+                              Principal principal) {
+        
+        if (result.hasErrors()) {
+            setupFormModels(model); 
+            return "session/create"; 
+        }
+
+        UserEntity currentUser = userRepo.findByUsername(principal.getName())
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        boolean isChair = currentUser.getRole().name().equals("CHAIR");
+
+        if (isChair) {
+            if (session.getSessionId() == null) {
+                session.setStatus(SessionStatus.PENDING);
+                session.setChair(currentUser);
+            }
+        } else {
+            if (session.getStatus() == null) {
+                session.setStatus(SessionStatus.APPROVED);
+            }
+        }
+
+        if (session.getSessionTime() == null) {
+            session.setSessionTime(LocalDateTime.now().plusDays(1));
+        }
+
+        try {
+            if (session.getSessionId() != null) {
+                sessionService.updateSession(session.getSessionId(), session);
+            } else {
+                sessionService.createSession(session);
+            }
+            
+            if (isChair) {
+                return "redirect:/chair/dashboard?success=Proposal Submitted";
+            } else {
+                return "redirect:/admin/schedule?success=Session Saved";
+            }
+
+        } catch (RuntimeException e) {
+            model.addAttribute("errorMessage", e.getMessage());
+            setupFormModels(model);
+            return "session/create";
+        }
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/delete/{id}")
     public String deleteSession(@PathVariable("id") Long id) {
         sessionService.deleteSession(id);
         return "redirect:/admin/schedule";
+    }
+
+    private void setupFormModels(Model model) {
+        model.addAttribute("conferences", conferenceRepo.findAll());
+        model.addAttribute("rooms", roomRepo.findAll());
+
+        List<UserEntity> potentialChairs = userRepo.findAll().stream()
+            .filter(u -> {
+                var role = u.getRole();
+                return role != null && (role.name().equals("CHAIR"));
+            })
+            .collect(Collectors.toList());
+
+        model.addAttribute("chairs", potentialChairs);
+    }
+
+    @GetMapping("/view/{id}")
+    public String viewSession(@PathVariable Long id, Model model) {
+        Session session = sessionService.getSessionById(id)
+            .orElseThrow(() -> new IllegalArgumentException("Invalid session Id:" + id));
+                model.addAttribute("currentSession", session);
+        return "session/view";
     }
 }

@@ -1,6 +1,6 @@
 -- 2. Alter Session table to add optional room_id
 ALTER TABLE sessions
-ADD COLUMN room_id INT NULL,
+ADD COLUMN room_id BIGINT NULL,
 ADD CONSTRAINT fk_session_room
     FOREIGN KEY (room_id)
     REFERENCES rooms(room_id);

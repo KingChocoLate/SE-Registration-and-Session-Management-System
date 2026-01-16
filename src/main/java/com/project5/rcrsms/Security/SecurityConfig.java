@@ -25,18 +25,36 @@ public class SecurityConfig {
     }
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception{
+    public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
         httpSecurity
             .csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/css/**", "/js/**", "/images/**", "/webjars/**", "/api/login", "/register", "/login", "/error", "/sessions").permitAll()
                 .requestMatchers("/admin/**").hasRole("ADMIN")
+                .requestMatchers("/chair/**").hasRole("CHAIR") 
                 .requestMatchers("/registrations/add").authenticated()
                 .anyRequest().authenticated()
             )
             .formLogin(form -> form
                 .loginPage("/login")
-                .defaultSuccessUrl("/", true)
+                // --- CUSTOM REDIRECT LOGIC ---
+                .successHandler((request, response, authentication) -> {
+                    var roles = authentication.getAuthorities().stream()
+                            .map(r -> r.getAuthority()).toList();
+
+                    // 1. Admin -> Admin Dashboard
+                    if (roles.contains("ROLE_ADMIN") || roles.contains("ADMIN")) {
+                        response.sendRedirect("/admin/dashboard");
+                    } 
+                    // 2. Chair -> Chair Dashboard 
+                    else if (roles.contains("ROLE_CHAIR") || roles.contains("CHAIR")) {
+                        response.sendRedirect("/chair/dashboard");
+                    } 
+                    // 3. Everyone else -> Conference List
+                    else {
+                        response.sendRedirect("/conferences");
+                    }
+                })
                 .permitAll()
             )
             .logout(logout -> logout

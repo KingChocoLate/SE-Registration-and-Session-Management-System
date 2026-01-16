@@ -14,9 +14,6 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
 
 @Entity
 @Table(name = "users")
@@ -27,16 +24,12 @@ public class UserEntity {
     @Column(name = "user_id")
     private Long userId;
 
-    @NotBlank(message = "Username is required")
     @Column(unique = true, nullable = false)
     private String username;
 
-    @NotBlank(message = "Password is required")
-    @Size(min = 8, message = "Password must be at least 8 characters")
     @Column(nullable = false)
     private String password;
 
-    @NotNull(message = "Role is required")
     @Enumerated(EnumType.STRING)
     private Role role;
 
